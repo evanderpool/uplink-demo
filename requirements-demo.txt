@@ -1,0 +1,6 @@
+# Demo deployment: extractors for every supported format + the API brain.
+pypdf>=4.0
+python-docx>=1.1
+openpyxl>=3.1
+xlrd>=2.0.1
+anthropic>=0.40

@@ -1,0 +1,21 @@
+# Industry corpora golden questions (public-domain docs fetched by scripts/fetch_corpora.py).
+# Run: python -m uplink eval fixtures/industry-golden.jsonl --db data/uplink.db
+{"q": "What were Apple's total net sales in fiscal 2023?", "expect": ["apple-10k"]}
+{"q": "What was Apple's net income in 2023?", "expect": ["apple-10k"]}
+{"q": "What does Microsoft report about Intelligent Cloud segment revenue?", "expect": ["microsoft-10k"]}
+{"q": "What does Tesla say about Cybertruck production?", "expect": ["tesla-10k"]}
+{"q": "What risk factors does Tesla list about lithium-ion battery cells?", "expect": ["tesla-10k"]}
+{"q": "When is hand hygiene required during patient care?", "expect": ["cdc-isolation"]}
+{"q": "How should environmental surfaces be cleaned and disinfected?", "expect": ["cdc-disinfection", "cdc-environmental"]}
+{"q": "What are the ventilation requirements for airborne infection isolation rooms?", "expect": ["cdc-environmental", "cdc-isolation"]}
+{"q": "How are heat-sensitive medical instruments sterilized?", "expect": ["cdc-disinfection"]}
+{"q": "What are the phases of the incident response lifecycle?", "expect": ["nist-sp-800-61"]}
+{"q": "What are the requirements for protecting controlled unclassified information in nonfederal systems?", "expect": ["nist-sp-800-171"]}
+{"q": "Which security control families does NIST define?", "expect": ["nist-sp-800-53", "nist-sp-800-171"]}
+{"q": "What are the five core functions of the cybersecurity framework?", "expect": ["nist-cybersecurity-framework"]}
+{"q": "How many people are employed by detailed industry in thousands?", "expect": ["bls-employed-by-industry"]}
+{"q": "What is the employment status of the civilian noninstitutional population?", "expect": ["bls-employment-status"]}
+{"q": "What are the incidence rates of nonfatal occupational injuries and illnesses by industry?", "expect": ["bls-injury-illness"]}
+{"q": "Which vulnerabilities are known to be used in ransomware campaigns?", "expect": ["cisa-known-exploited"]}
+{"q": "What is the required action and due date for a known exploited vulnerability?", "expect": ["cisa-known-exploited"]}
+{"q": "How many provisional COVID-19 deaths were reported by week?", "expect": ["cdc-provisional-covid-deaths"]}

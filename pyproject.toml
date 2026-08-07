@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uplink-retrieval"
+version = "0.1.0"
+description = "Local, private document retrieval over SQLite FTS5 - Markdown, PDF, Word, Excel, CSV. Your documents never leave your machine."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Erick Vanderpool" }]
+keywords = ["rag", "retrieval", "bm25", "fts5", "sqlite", "local-first"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Indexing",
+]
+
+# Core retrieval (index/search/eval of md, txt, csv, tsv) is stdlib-only.
+dependencies = []
+
+[project.optional-dependencies]
+pdf = ["pypdf>=4.0"]
+docx = ["python-docx>=1.1"]
+xlsx = ["openpyxl>=3.1"]
+xls = ["xlrd>=2.0.1"]
+all = ["pypdf>=4.0", "python-docx>=1.1", "openpyxl>=3.1", "xlrd>=2.0.1"]
+dev = ["pypdf>=4.0", "python-docx>=1.1", "openpyxl>=3.1", "xlrd>=2.0.1", "pytest>=8.0"]
+
+[project.urls]
+Repository = "https://github.com/evanderpool/uplink"
+
+[tool.setuptools]
+packages = ["uplink"]

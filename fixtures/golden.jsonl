@@ -1,0 +1,20 @@
+# Golden questions for the Artificial Management ops corpus (public repo docs).
+# hit = any top-k result whose path or section contains any 'expect' substring.
+{"q": "What is the Q3 working deadline?", "expect": ["goals.md", "current-priorities.md"]}
+{"q": "How many job applications per week are targeted?", "expect": ["current-priorities.md", "goals.md"]}
+{"q": "What port does the mobile bridge server run on?", "expect": ["CLAUDE.md", "mobile-bridge"]}
+{"q": "When does the dashboard heartbeat mark the system STALE?", "expect": ["current-priorities.md", "goals.md"]}
+{"q": "Which MCP servers are connected?", "expect": ["work.md", "CLAUDE.md"]}
+{"q": "What is the source of truth hierarchy?", "expect": ["ai-system-standards.md"]}
+{"q": "What must never be committed to the public repo?", "expect": ["ai-system-standards.md"]}
+{"q": "What services does Artificial Management offer?", "expect": ["work.md"]}
+{"q": "What is the format for decision log entries?", "expect": ["CLAUDE.md", "decisions"]}
+{"q": "What happened during the dark period?", "expect": ["current-priorities.md", "goals.md", "log.md"]}
+{"q": "What gates client outreach?", "expect": ["current-priorities.md", "goals.md"]}
+{"q": "Which projects were removed from the portfolio?", "expect": ["project-tracker.md", "log.md"]}
+{"q": "What does the Data Integrity Agent do?", "expect": ["team.md", "ai-system-registry.md", "data-integrity"]}
+{"q": "Where do session summaries get stored?", "expect": ["CLAUDE.md", "work-session-to-docs"]}
+{"q": "What is the rule when two documents conflict?", "expect": ["ai-system-standards.md"]}
+{"q": "What are the milestones for the canonical store migration?", "expect": ["project-tracker.md"]}
+{"q": "How do I register a new project?", "expect": ["project-tracker.md", "current-priorities.md"]}
+{"q": "What tone should weekly executive summaries use?", "expect": ["weekly", "communication-style"]}

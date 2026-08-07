@@ -1,0 +1,9 @@
+# Convenience file: full dev setup in one command.
+# The canonical dependency spec lives in pyproject.toml -
+# core retrieval is stdlib-only; extractors are optional extras
+# (pip install .[pdf] / .[docx] / .[xlsx] / .[xls] / .[all]).
+pypdf>=4.0
+python-docx>=1.1
+openpyxl>=3.1
+xlrd>=2.0.1
+pytest>=8.0

@@ -1,0 +1,5 @@
+{"ts": "2026-08-06T21:05:05+00:00", "label": "v0.1.0 BM25 + stopword filter", "db": "index.db", "fixtures": "golden.jsonl", "questions": 18, "hit_at_1": 12, "hit_at_k": 16, "k": 5, "mrr": 0.769}
+{"ts": "2026-08-06T22:37:05+00:00", "label": "v0.2.0 industry corpora baseline (BM25)", "db": "uplink.db", "fixtures": "industry-golden.jsonl", "questions": 13, "hit_at_1": 12, "hit_at_k": 12, "k": 5, "mrr": 0.923}
+{"ts": "2026-08-07T13:33:11+00:00", "label": "v0.6 + spreadsheet/CSV corpora (BLS, CISA, CDC)", "db": "uplink.db", "fixtures": "industry-golden.jsonl", "questions": 19, "hit_at_1": 18, "hit_at_k": 18, "k": 5, "mrr": 0.947}
+{"ts": "2026-08-07T16:37:47+00:00", "label": "local: apple manual corpus (247 docs, 9533 passages)", "db": "uplink.db", "fixtures": "local-apple-golden.jsonl", "questions": 10, "hit_at_1": 9, "hit_at_k": 9, "k": 5, "mrr": 0.9}
+{"ts": "2026-08-07T22:33:33+00:00", "label": "post 10-K ingest (257 docs, xls extractor)", "db": "uplink.db", "fixtures": "local-apple-golden.jsonl", "questions": 10, "hit_at_1": 9, "hit_at_k": 9, "k": 5, "mrr": 0.9}

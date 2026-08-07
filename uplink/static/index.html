@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Uplink</title>
+<meta name="uplink-build" content="__BUILD__">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+<!-- Ambient depth: pure CSS/SVG gradient orbs, drifted by GSAP. No WebGL,
+     no images, no network - it costs nothing and never blocks the UI. -->
+<div class="ambient" aria-hidden="true">
+  <span class="orb orb-a"></span>
+  <span class="orb orb-b"></span>
+  <span class="orb orb-c"></span>
+</div>
+
+<div id="stale" class="stale-banner" hidden>
+  <span>This page is running an older version of Uplink. Reload to pick up
+  the current one — until you do, source selections and other controls may
+  not behave as shown.</span>
+  <button id="stale-reload" class="btn btn-primary" type="button">Reload</button>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="30" height="30">
+        <defs>
+          <linearGradient id="markg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--brand-1)"/>
+            <stop offset="1" stop-color="var(--brand-2)"/>
+          </linearGradient>
+        </defs>
+        <rect x="1" y="1" width="30" height="30" rx="10" fill="url(#markg)"/>
+        <path d="M16 22V10M16 10l-4.5 4.5M16 10l4.5 4.5" fill="none"
+              stroke="#fff" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <div class="brand-text">
+      <h1>Uplink</h1>
+      <p id="brandline">private document intelligence</p>
+    </div>
+  </div>
+
+  <div class="collection-switch">
+    <label for="coll" class="sr-only">Collection</label>
+    <select id="coll" title="Collection">
+      <option value="">All collections</option>
+    </select>
+  </div>
+
+  <div class="topbar-right">
+    <span id="privacy-pill" class="pill pill-good" title="Documents never leave this machine">
+      <span class="dot"></span><span id="privacy-text">local &amp; read-only</span>
+    </span>
+    <button id="theme-toggle" class="icon-btn" type="button" title="Toggle theme"
+            aria-label="Toggle light or dark theme">◐</button>
+  </div>
+</header>
+
+<main class="workspace">
+
+  <!-- ─────────────────────────── SOURCES ─────────────────────────── -->
+  <section class="panel panel-sources" id="panel-sources" aria-label="Sources">
+    <div class="panel-head">
+      <h2>Sources</h2>
+      <span id="source-count" class="counter">0</span>
+    </div>
+
+    <div class="source-tools">
+      <label class="check-all">
+        <input type="checkbox" id="select-all" checked>
+        <span id="select-all-label">All sources</span>
+      </label>
+      <button id="add-source" class="btn btn-soft" type="button" hidden>+ Add</button>
+    </div>
+
+    <div class="source-filter">
+      <input id="source-search" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Find a source by title…" aria-label="Filter sources by title">
+      <div id="type-filter" class="type-filter" role="group"
+           aria-label="Filter sources by file type"></div>
+    </div>
+
+    <div id="source-list" class="source-list"></div>
+
+    <div id="scope-note" class="scope-note" hidden></div>
+
+  </section>
+
+  <!-- ──────────────────────── CONVERSATION ───────────────────────── -->
+  <section class="panel panel-chat" aria-label="Conversation">
+    <div id="thread" class="thread">
+      <div id="empty" class="empty-state">
+        <div class="empty-badge" aria-hidden="true">
+          <svg viewBox="0 0 48 48" width="44" height="44">
+            <circle cx="24" cy="24" r="22" fill="none" stroke="var(--brand-1)"
+                    stroke-width="2" opacity=".25"/>
+            <path d="M24 34V16M24 16l-7 7M24 16l7 7" fill="none"
+                  stroke="var(--brand-1)" stroke-width="2.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 id="empty-title">Ask your documents anything</h2>
+        <p id="empty-sub" class="empty-sub">
+          Answers are grounded only in what you have indexed, and every claim
+          links back to the passage it came from.
+        </p>
+        <div id="suggestions" class="suggestions"></div>
+      </div>
+    </div>
+
+    <form id="composer" class="composer">
+      <div class="composer-inner">
+        <input id="q" type="text" autocomplete="off" spellcheck="false"
+               placeholder="Ask a question, or search for a phrase…" autofocus
+               aria-label="Your question">
+        <div class="composer-actions">
+          <button id="mic" class="btn btn-ghost mic-btn" type="button" hidden
+                  title="Dictate your question — the audio goes to your browser's speech service; your documents never do"
+                  aria-label="Dictate your question">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
+              <path d="M6 11a6 6 0 0 0 12 0M12 17.5v3M9 20.5h6" fill="none"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button id="go" class="btn btn-ghost" type="submit" title="Keyword search (instant)">
+            Search
+          </button>
+          <span id="scope-hint" class="scope-hint" hidden></span>
+        <button id="ai" class="btn btn-primary" type="button" hidden
+                  title="Generate a cited answer">
+            <span class="btn-label">Ask AI</span>
+          </button>
+        </div>
+      </div>
+      <div class="composer-foot">
+        <p id="meta" class="micro composer-meta"></p>
+        <button id="clear-thread" class="mini" type="button">Clear conversation</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ──────────────────────────── STUDIO ─────────────────────────── -->
+  <section class="panel panel-studio" aria-label="Studio">
+    <div class="panel-head">
+      <h2>Studio</h2>
+      <span id="note-count" class="counter">0</span>
+    </div>
+
+    <div class="studio-scroll">
+      <p class="group-head">Quality</p>
+      <div class="studio-block">
+        <div id="accuracy" class="metric-card"></div>
+      </div>
+      <div class="studio-block">
+        <div id="failing" class="metric-card"></div>
+      </div>
+
+      <div class="studio-block">
+        <div id="gaps" class="metric-card"></div>
+      </div>
+
+      <p class="group-head">Usage</p>
+      <div class="studio-block">
+        <div id="answer-metrics" class="metric-card"></div>
+      </div>
+      <div class="studio-block">
+        <div id="feedback-metrics" class="metric-card"></div>
+      </div>
+      <div class="studio-block">
+        <div id="performance" class="metric-card"></div>
+      </div>
+
+      <p class="group-head">Corpus</p>
+      <div class="studio-block">
+        <div id="health-metrics" class="metric-card"></div>
+      </div>
+
+      <p class="group-head">Saved</p>
+      <div class="studio-block">
+        <div class="report-links" id="report-links"></div>
+      </div>
+
+      <div class="studio-block">
+        <div id="notes" class="notes"></div>
+        <p id="notes-empty" class="micro">
+          Save an answer to keep it here — citations stay clickable.
+        </p>
+      </div>
+
+      <p class="micro" id="index-meta">…</p>
+    </div>
+  </section>
+</main>
+
+<!-- Source reader: slides in over the workspace when a citation is opened -->
+<aside id="reader" class="reader" hidden aria-label="Source reader">
+  <div class="reader-head">
+    <div class="reader-ident">
+      <p class="reader-path" id="reader-path"></p>
+      <p class="reader-meta micro" id="reader-meta"></p>
+    </div>
+    <button id="reader-close" class="icon-btn" type="button" aria-label="Close source">✕</button>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button id="tab-original" class="tab" type="button" role="tab">Original file</button>
+    <button id="tab-text" class="tab is-on" type="button" role="tab">Indexed text</button>
+    <a id="reader-download" class="tab tab-link" href="#" download hidden>Download</a>
+  </div>
+
+  <div class="reader-body" id="reader-body"></div>
+  <div class="reader-frame-wrap" id="reader-frame-wrap" hidden>
+    <iframe id="reader-frame" class="reader-frame" title="Original document"
+            sandbox="allow-same-origin"></iframe>
+    <p id="reader-frame-note" class="micro reader-frame-note"></p>
+  </div>
+
+  <div class="reader-nav" id="reader-nav">
+    <button id="reader-prev" class="btn btn-soft" type="button">← earlier</button>
+    <button id="reader-next" class="btn btn-soft" type="button">later →</button>
+    <span class="micro" id="reader-pos"></span>
+  </div>
+</aside>
+<!-- Add-sources dialog: opened from + Add, closed by ✕, Escape, or the scrim -->
+<aside id="addbox" class="addbox" hidden role="dialog" aria-modal="true"
+       aria-labelledby="addbox-title">
+  <div class="addbox-head">
+    <h2 id="addbox-title">Add sources</h2>
+    <button id="addbox-close" class="icon-btn" type="button" aria-label="Close">✕</button>
+  </div>
+
+  <div class="tabs addbox-tabs" role="tablist">
+    <button id="tab-files" class="tab is-on" type="button" role="tab">Upload files</button>
+    <button id="tab-text" class="tab" type="button" role="tab">Paste text</button>
+  </div>
+
+  <div class="addbox-body">
+    <!-- ── files ─────────────────────────────────────────────── -->
+    <div id="pane-files">
+      <label class="drop" id="drop">
+        <input type="file" id="file" hidden multiple>
+        <span class="drop-icon" aria-hidden="true">⬆</span>
+        <span class="drop-text">Drop files here or <u>browse</u></span>
+        <span class="drop-hint" id="drop-types">loading supported types…</span>
+      </label>
+      <div id="upqueue" class="upqueue"></div>
+      <p id="analysis" class="analysis" hidden></p>
+    </div>
+
+    <!-- ── pasted text ───────────────────────────────────────── -->
+    <div id="pane-text" hidden>
+      <label class="field-label" for="text-title">Title</label>
+      <input id="text-title" type="text" class="field" autocomplete="off"
+             placeholder="What is this note about?">
+      <label class="field-label" for="text-body">Text</label>
+      <textarea id="text-body" class="field field-area" rows="9"
+                placeholder="Paste or type anything — meeting notes, an email, a policy…"></textarea>
+      <p class="micro">Saved as a Markdown source, indexed exactly like a file.</p>
+    </div>
+  </div>
+
+  <div class="addbox-foot">
+    <div class="addbox-collection">
+      <label class="field-label" for="add-coll">Collection</label>
+      <div class="collection-row">
+        <select id="add-coll" class="field"></select>
+        <input id="add-newcoll" class="field" type="text" hidden autocomplete="off"
+               spellcheck="false" placeholder="new collection name"
+               aria-label="New collection name">
+      </div>
+      <p id="coll-note" class="micro"></p>
+    </div>
+    <div class="addbox-actions">
+      <button id="addbox-cancel" class="btn btn-ghost" type="button">Cancel</button>
+      <button id="upgo" class="btn btn-primary" type="button">Add to collection</button>
+    </div>
+  </div>
+  <p id="upmsg" class="micro addbox-msg"></p>
+</aside>
+
+<div id="scrim" class="scrim" hidden></div>
+
+<!-- One tooltip, moved and filled on demand. Shown on hover AND focus so
+     the explanations are reachable without a mouse. -->
+<div id="tip" class="tip" role="tooltip" hidden>
+  <p class="tip-title" id="tip-title"></p>
+  <p class="tip-body" id="tip-body"></p>
+  <p class="tip-cmd" id="tip-cmd"></p>
+</div>
+
+<script src="/static/gsap.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
