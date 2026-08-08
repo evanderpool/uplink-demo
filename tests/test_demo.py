@@ -144,18 +144,21 @@ def test_brain_says_so_when_documents_do_not_cover_it(demo_index):
     assert "don't seem to cover" in resp["answer"]
 
 
-def test_answer_parser_tolerates_wrappers():
-    """The model sometimes fences its JSON or adds a stray line — those must
-    not turn a good answer into an outage."""
+def test_answer_parser_splits_body_from_cited_line():
+    """Plain-text replies end with a CITED line; the body is everything above
+    it. No JSON to truncate, no envelope for reasoning to leak into."""
     from uplink.api_brain import _parse_answer
-    good = '{"answer": "x", "chunk_numbers": [1]}'
-    assert _parse_answer(good)["answer"] == "x"
-    assert _parse_answer("```json\n" + good + "\n```")["chunk_numbers"] == [1]
-    assert _parse_answer("```\n" + good + "\n```")["answer"] == "x"
-    assert _parse_answer("Here you go:\n" + good)["answer"] == "x"
+    reply = ("Apple's revenue grew.\n\n• 2021: $365B\n• 2025: $416B\n"
+             "CITED: 1, 4, 5")
+    out = _parse_answer(reply)
+    assert out["chunk_numbers"] == [1, 4, 5]
+    assert "CITED" not in out["answer"]
+    assert out["answer"].startswith("Apple's revenue grew.")
+    # A reply with no CITED line yields no citations, not an error.
+    assert _parse_answer("Just an answer.")["chunk_numbers"] == []
     import pytest as _pytest
     with _pytest.raises(ValueError):
-        _parse_answer("not json at all")
+        _parse_answer("CITED: 1")  # nothing above the line = empty body
 
 
 def test_brain_api_failure_becomes_an_error_answer(demo_index):

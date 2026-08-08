@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import threading
 import time
 from pathlib import Path
@@ -43,56 +44,47 @@ SYSTEM = (
     "• next fact — one per bullet, kept short\n"
     "• and so on\n"
     "Every response with any facts in it uses bullets — never a paragraph. "
-    "Plain text only: no markdown symbols like **, #, or tables. Cite by "
-    "listing the numbers of every chunk your answer relies on."
+    "Plain text only: no markdown symbols like **, #, or tables. "
+    "After the answer, add a final line by itself in exactly this form:\n"
+    "CITED: 1, 4, 5\n"
+    "listing the numbers of every chunk your answer relied on (and nothing "
+    "else on that line). Do not restate your reasoning; give only the answer "
+    "and that final line."
 )
 
-ANSWER_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "answer": {"type": "string"},
-        "chunk_numbers": {"type": "array", "items": {"type": "integer"}},
-    },
-    "required": ["answer", "chunk_numbers"],
-    "additionalProperties": False,
-}
+# Pulls the trailing "CITED: 1, 4, 5" line and the answer body above it.
+_CITED_RE = re.compile(r"(?im)^\s*CITED:\s*([0-9,\s]*)\s*$")
 
-
-# Room for a rich answer PLUS the JSON envelope. Sonnet's answers are longer
-# than Haiku's, and too small a budget truncates the JSON mid-string — which
-# then fails to parse and the visitor sees an error instead of an answer.
-MAX_ANSWER_TOKENS = 2048
+MAX_ANSWER_TOKENS = 1500
 
 
 def _parse_answer(text: str) -> dict:
-    """Parse the model's JSON answer, tolerating the usual wrappers.
+    """Split the model's plain-text reply into answer body + cited numbers.
 
-    Models occasionally fence the JSON in ```json ... ``` or add a stray
-    line; peel those before giving up. Raises ValueError if there's no
-    usable object, so the caller can retry.
+    The reply ends with a 'CITED: 1, 4, 5' line; everything above it is the
+    answer. Plain text (not JSON) is deliberate — it cannot be truncated
+    into something unparseable, and there is no envelope for reasoning to
+    leak into. Returns {"answer", "chunk_numbers"}; a missing CITED line
+    just yields no citations rather than an error.
     """
-    s = text.strip()
-    if s.startswith("```"):
-        s = s.split("```", 2)[1] if "```" in s[3:] else s[3:]
-        if s.lstrip().startswith("json"):
-            s = s.lstrip()[4:]
-        s = s.strip()
-    try:
-        return json.loads(s)
-    except json.JSONDecodeError:
-        # Last resort: the outermost {...} span.
-        i, j = s.find("{"), s.rfind("}")
-        if i >= 0 and j > i:
-            return json.loads(s[i:j + 1])
-        raise ValueError("no JSON object in model output")
+    m = _CITED_RE.search(text)
+    if m:
+        nums = [int(n) for n in re.findall(r"\d+", m.group(1))]
+        answer = text[:m.start()].strip()
+    else:
+        nums, answer = [], text.strip()
+    if not answer:
+        raise ValueError("empty answer body")
+    return {"answer": answer, "chunk_numbers": nums}
 
 
 def _call_claude(question: str, chunks_block: str) -> dict:
     """One answer from the API; returns {"answer", "chunk_numbers"}.
 
-    Retries once on a truncated or unparseable response — an intermittent
-    bad sample shouldn't surface to the visitor as an outage. Isolated so
-    tests can substitute it.
+    Thinking is turned OFF: this is a compose-from-passages task, not a
+    reasoning problem, and leaving adaptive thinking on let the model's
+    reasoning stream bleed into the reply. Retries once on an empty reply.
+    Isolated so tests can substitute it.
     """
     import anthropic
 
@@ -101,25 +93,19 @@ def _call_claude(question: str, chunks_block: str) -> dict:
             + json.dumps(question) + "\n\nDocument chunks:\n" + chunks_block)
 
     last_err: Exception | None = None
-    for attempt in range(2):
+    for _ in range(2):
         response = client.messages.create(
             model=MODEL,
             max_tokens=MAX_ANSWER_TOKENS,
             system=SYSTEM,
-            output_config={"format": {"type": "json_schema", "schema": ANSWER_SCHEMA}},
+            thinking={"type": "disabled"},
             messages=[{"role": "user", "content": user}],
         )
-        if getattr(response, "stop_reason", None) == "max_tokens":
-            # Truncated before the JSON closed — a retry rarely helps at the
-            # same budget, so surface it as an error the caller can log.
-            last_err = ValueError("answer exceeded the token budget")
-            continue
-        text = next((b.text for b in response.content if b.type == "text"), "")
+        text = "".join(b.text for b in response.content if b.type == "text")
         try:
             return _parse_answer(text)
         except ValueError as exc:
             last_err = exc
-            continue
     raise last_err or ValueError("no answer produced")
 
 
