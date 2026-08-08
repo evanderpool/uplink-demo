@@ -298,8 +298,8 @@ inspect.
   head-to-head is reproducible with
   [`scripts/eval_compare.py`](scripts/eval_compare.py) against
   [the golden questions](fixtures/demo-10k-golden.jsonl). (The live demo runs
-  BM25 by default and switches to hybrid when an embedding key is configured —
-  the retriever falls back automatically, so the site works either way.)
+  hybrid retrieval, falling back to BM25 automatically if the embedding key
+  is removed.)
 - **The tests** run with one command (`python -m pytest`) in
   [this repository](https://github.com/evanderpool/uplink-demo).
 - **The verification pipeline** is readable code — citation checking in
