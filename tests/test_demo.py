@@ -144,6 +144,20 @@ def test_brain_says_so_when_documents_do_not_cover_it(demo_index):
     assert "don't seem to cover" in resp["answer"]
 
 
+def test_answer_parser_tolerates_wrappers():
+    """The model sometimes fences its JSON or adds a stray line — those must
+    not turn a good answer into an outage."""
+    from uplink.api_brain import _parse_answer
+    good = '{"answer": "x", "chunk_numbers": [1]}'
+    assert _parse_answer(good)["answer"] == "x"
+    assert _parse_answer("```json\n" + good + "\n```")["chunk_numbers"] == [1]
+    assert _parse_answer("```\n" + good + "\n```")["answer"] == "x"
+    assert _parse_answer("Here you go:\n" + good)["answer"] == "x"
+    import pytest as _pytest
+    with _pytest.raises(ValueError):
+        _parse_answer("not json at all")
+
+
 def test_brain_api_failure_becomes_an_error_answer(demo_index):
     db_path, asks_dir = demo_index
     req = asks.new_ask(asks_dir, "how long do refunds last", None)
