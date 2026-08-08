@@ -9,7 +9,7 @@ Built and directed by **Erick Vanderpool** ·
 [demo source](https://github.com/evanderpool/uplink-demo) ·
 [**live demo →**](https://uplink-demo.onrender.com)
 
-| 2 days | 361 | 95% | ~2¢ |
+| 2 days | 363 | 95% | ~2¢ |
 |---|---|---|---|
 | first commit → live public demo | automated tests, all passing | first-answer accuracy, measured (19-question set) | cost per answered question |
 
@@ -251,7 +251,7 @@ reason two days of pace didn't cost quality:
   supervised-testing loop above proving each phase on real documents before the
   next began.
 - **Nothing merged on trust.** Every phase landed with automated tests (25 on
-  day one, 361 today), and dedicated adversarial review passes were run against
+  day one, 363 today), and dedicated adversarial review passes were run against
   each surface — sessions instructed to attack the work. Those reviews produced
   over thirty findings, including one critical; every one was fixed and then
   pinned as a regression test so it cannot quietly return.
