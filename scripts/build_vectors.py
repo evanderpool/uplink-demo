@@ -17,7 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from uplink.embeddings import get_embedder  # noqa: E402
+from uplink.embeddings import EmbedderUnavailable, get_embedder  # noqa: E402
 from uplink.vectors import build_vectors  # noqa: E402
 
 
@@ -27,7 +27,15 @@ def main() -> int:
     ap.add_argument("--rebuild", action="store_true",
                     help="re-embed every chunk (use after switching embedder)")
     args = ap.parse_args()
-    embedder = get_embedder()
+    try:
+        embedder = get_embedder()
+    except EmbedderUnavailable as exc:
+        # No embedding key configured yet: this is the expected state before
+        # hybrid is turned on. Skip cleanly so the deploy still succeeds and
+        # the demo serves BM25; adding the key and redeploying activates
+        # hybrid automatically.
+        print(f"skipping vectors — {exc}. Demo will run on BM25.")
+        return 0
     n = build_vectors(args.db, embedder, rebuild=args.rebuild)
     print(f"embedded {n} chunks with {embedder.name}")
     return 0

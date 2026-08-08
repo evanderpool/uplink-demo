@@ -259,8 +259,8 @@ where keyword search is <em>most</em> disadvantaged, so the gain would likely
 be smaller on distinct documents; and the embedder choice follows the
 <strong>trust boundary</strong>, not performance — an on-device model where
 the documents are confidential, an embedding API only where the data is
-public. The live demo currently serves pure BM25; hybrid is built, measured,
-and behind a flag.</p>
+public. The live demo runs BM25 by default and switches to hybrid when an
+embedding key is configured.</p>
 
 <h2>From local to live</h2>
 <p>The demo you're reading on didn't start public. It earned its way out, in
@@ -432,8 +432,8 @@ can inspect.</p>
   comparison — are in
   <a href="https://github.com/evanderpool/uplink-demo/blob/main/fixtures/eval-history.jsonl">the
   logged evaluation history</a>, reproducible with the repo's
-  <code>eval_compare</code> script. (The live demo currently serves pure
-  BM25; hybrid is built, measured, and behind a flag.)</li>
+  <code>eval_compare</code> script. (The live demo runs BM25 by default and
+  switches to hybrid when an embedding key is configured.)</li>
   <li><strong>The 343 tests</strong> run with one command
   (<code>python -m pytest</code>) in
   <a href="https://github.com/evanderpool/uplink-demo">the demo repository</a>.</li>

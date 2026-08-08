@@ -6,6 +6,12 @@
 #
 # Set in the Render dashboard (never in this repo):
 #   ANTHROPIC_API_KEY  - powers the Ask AI brain (Claude Sonnet, ~2c/question)
+#   VOYAGE_API_KEY     - OPTIONAL. Add this to turn ON hybrid retrieval. With
+#                        it set, the deploy embeds the corpus (sub-penny, one
+#                        time) and answers use BM25 + semantic vectors. Without
+#                        it, the build skips vectors and the demo runs pure
+#                        BM25 — so the site works either way. Set a small spend
+#                        cap on the Voyage account too.
 
 services:
   - type: web
@@ -14,7 +20,8 @@ services:
     plan: free
     buildCommand: >-
       pip install -r requirements-demo.txt &&
-      python scripts/build_demo_index.py
+      python scripts/build_demo_index.py &&
+      python scripts/build_vectors.py --db data/uplink.db
     startCommand: python -m uplink serve --db data/uplink.db --host 0.0.0.0 --port $PORT
     envVars:
       - key: UPLINK_DEMO
@@ -23,7 +30,15 @@ services:
       # can't drift with a code default. Change it here, not in code.
       - key: UPLINK_BRAIN_MODEL
         value: "claude-sonnet-5"
+      # Hybrid retrieval: on when an embedding key is present, otherwise the
+      # retriever falls back to BM25 automatically. Safe to leave set.
+      - key: UPLINK_HYBRID
+        value: "1"
+      - key: UPLINK_EMBEDDER
+        value: "voyage"
       - key: PYTHON_VERSION
         value: "3.12.7"
       - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: VOYAGE_API_KEY
         sync: false
