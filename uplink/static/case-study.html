@@ -7,18 +7,19 @@
 <title>Uplink — Case Study · Erick Vanderpool</title>
 <style>
   :root {
-    --brand-1: #5b5bd6; --brand-2: #8b5bd6; --good: #1a9c6b;
+    --brand-1: #5b5bd6; --brand-2: #8b5bd6; --good: #1a9c6b; --bad: #c4453f;
     --ink: #1c1c28; --ink-2: #4a4a5a; --muted: #8a8a9a;
     --bg: #f7f6fb; --surface: #ffffff; --line: #e4e2ee;
+    --soft: #efedf8;
   }
   @media (prefers-color-scheme: dark) {
     :root { --ink: #ececf4; --ink-2: #b8b8c8; --muted: #77778a;
-            --bg: #14141c; --surface: #1d1d28; --line: #2c2c3a; }
+            --bg: #14141c; --surface: #1d1d28; --line: #2c2c3a; --soft: #232331; }
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--ink);
          font: 16px/1.65 Georgia, 'Times New Roman', serif; }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px 80px; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 22px 80px; }
   header.hero { padding: 56px 0 36px; border-bottom: 1px solid var(--line); }
   .kicker { font-family: system-ui, sans-serif; font-size: 12px; font-weight: 700;
             letter-spacing: .12em; text-transform: uppercase; color: var(--brand-1); }
@@ -33,17 +34,15 @@
           border-radius: 12px; padding: 14px 16px; }
   .fact b { display: block; font-size: 21px; letter-spacing: -0.01em; }
   .fact span { font-size: 12px; color: var(--muted); }
-  h2 { font-size: 24px; letter-spacing: -0.01em; margin: 46px 0 14px; }
-  h3 { font-family: system-ui, sans-serif; font-size: 14px; text-transform: uppercase;
-       letter-spacing: .08em; color: var(--brand-1); margin: 26px 0 8px; }
+  h2 { font-size: 25px; letter-spacing: -0.01em; margin: 50px 0 14px; }
+  h3 { font-family: system-ui, sans-serif; font-size: 13.5px; text-transform: uppercase;
+       letter-spacing: .08em; color: var(--brand-1); margin: 28px 0 8px; }
   p { margin: 0 0 14px; color: var(--ink-2); }
   p strong, li strong { color: var(--ink); }
   ul, ol { margin: 0 0 14px 22px; color: var(--ink-2); }
-  li { margin-bottom: 8px; }
+  li { margin-bottom: 9px; }
   .card { background: var(--surface); border: 1px solid var(--line);
           border-radius: 14px; padding: 20px 22px; margin: 18px 0; }
-  .flow { font-family: system-ui, sans-serif; font-size: 14.5px; }
-  .flow li { margin-bottom: 12px; }
   table { width: 100%; border-collapse: collapse; margin: 14px 0;
           font-family: system-ui, sans-serif; font-size: 14px; }
   th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line);
@@ -54,6 +53,8 @@
   .pull { border-left: 3px solid var(--brand-1); padding: 4px 0 4px 18px;
           margin: 20px 0; font-size: 18px; color: var(--ink); font-style: italic; }
   a { color: var(--brand-1); }
+  code { font: 13px/1.5 ui-monospace, Consolas, monospace; background: var(--soft);
+         border-radius: 5px; padding: 1px 6px; color: var(--ink); }
   .cta { display: inline-block; font-family: system-ui, sans-serif; font-weight: 600;
          font-size: 14.5px; text-decoration: none; color: #fff !important;
          background: linear-gradient(120deg, var(--brand-1), var(--brand-2));
@@ -62,6 +63,41 @@
                color: var(--brand-1) !important; }
   .foot { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line);
           font-family: system-ui, sans-serif; font-size: 13.5px; color: var(--muted); }
+
+  /* ------- workflow diagrams (pure HTML/CSS: responsive, theme-aware) ------- */
+  .diagram { font-family: system-ui, sans-serif; margin: 22px 0; }
+  .dtitle { font-size: 12px; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .dstep { background: var(--surface); border: 1px solid var(--line);
+           border-radius: 12px; padding: 13px 16px; position: relative; }
+  .dstep b { display: block; font-size: 14px; color: var(--ink); }
+  .dstep span { font-size: 12.5px; color: var(--muted); line-height: 1.45;
+                display: block; margin-top: 2px; }
+  .flowv { display: flex; flex-direction: column; gap: 26px; }
+  .flowv .dstep:not(:last-child)::after {
+    content: "↓"; position: absolute; left: 50%; bottom: -24px;
+    transform: translateX(-50%); color: var(--brand-1); font-size: 16px;
+    font-weight: 700; }
+  .dstep.gate { border-color: color-mix(in srgb, var(--brand-1) 55%, transparent);
+                box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-1) 10%, transparent); }
+  .dstep .fork { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .chip { font-size: 12px; font-weight: 650; border-radius: 999px; padding: 4px 12px; }
+  .chip.ok { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .chip.no { color: var(--bad); background: color-mix(in srgb, var(--bad) 10%, transparent); }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 620px) { .twocol { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--line);
+         border-radius: 14px; padding: 16px 18px; }
+  .col h4 { font-size: 14px; margin-bottom: 4px; }
+  .col .tag { font-size: 11px; font-weight: 700; letter-spacing: .08em;
+              text-transform: uppercase; }
+  .col ul { margin: 10px 0 0 0; list-style: none; }
+  .col li { font-size: 13px; color: var(--ink-2); padding-left: 18px;
+            position: relative; margin-bottom: 7px; line-height: 1.45; }
+  .col li::before { content: "•"; position: absolute; left: 2px; color: var(--brand-1); }
+  .sharedbar { margin-top: 14px; text-align: center; font-size: 13px; font-weight: 650;
+               color: #fff; border-radius: 12px; padding: 12px 16px;
+               background: linear-gradient(120deg, var(--brand-1), var(--brand-2)); }
 </style>
 </head>
 <body>
@@ -99,47 +135,68 @@ they are, and every answer must prove where it came from.</strong></p>
 <h2>The product</h2>
 <p>Uplink indexes a folder of mixed documents — Markdown, PDF, Word, modern
 and legacy Excel, CSV — into a single searchable database on the machine that
-owns them. From there it offers two things:</p>
+owns them. The workspace is three panels: your <strong>sources</strong> on
+the left (searchable, filterable by type, each one selectable in or out of
+scope), the <strong>conversation</strong> in the middle, and a
+<strong>studio</strong> of live quality metrics on the right. Two ways to get
+answers:</p>
 <ul>
   <li><strong>Instant keyword search</strong> across every document, with the
   matching passage highlighted and one click to the original file.</li>
-  <li><strong>Asked-and-answered questions</strong>: plain-language questions
-  get plain-language answers, composed <em>only</em> from retrieved passages,
-  with citations that open the exact spot in the exact document.</li>
+  <li><strong>Asked-and-answered questions</strong> — typed or dictated by
+  voice — answered <em>only</em> from retrieved passages, with citations that
+  open the exact spot in the exact document.</li>
 </ul>
-<p>This public demo runs the same engine against ten years of Apple's annual
-reports — public SEC filings, in their original Excel format. Ask it about a
-decade of revenue and margins; click any citation and land on the actual row
-of the actual filing. The private edition points at your own folder and
-nothing ever leaves your machine — that difference in trust posture is a
-<a href="https://github.com/evanderpool/uplink-demo">deliberate, inspectable
-deployment fork</a>, not a marketing line.</p>
+<p>This public demo runs the engine against ten years of Apple's annual
+reports — public SEC filings, in their original Excel format. Ask about a
+decade of revenue; click any citation and land on the actual row of the
+actual filing.</p>
 
-<h2>How answers stay honest</h2>
+<h2>How every answer is made</h2>
 <p>"The answer comes from your documents" is a promise most systems make and
-none enforce. Uplink enforces it in code, at four points:</p>
-<div class="card"><ol class="flow">
-  <li><strong>Retrieve first.</strong> The question runs through ranked search
-  (BM25 over SQLite full-text indexing). The answering model sees only the
-  passages retrieval returned — numbered, with their source coordinates.</li>
-  <li><strong>Cite by number, not by name.</strong> The model doesn't write
-  citations; it picks passage numbers from the list it was shown. The
-  citation coordinates — file, section, position — are copied from the index,
-  never generated. A model cannot cite a document it was never given.</li>
-  <li><strong>Verify before publishing.</strong> Before any answer is shown,
-  every citation is checked against the index. A citation naming a document
-  that isn't there — or one the user deselected — causes the answer to be
-  refused, not displayed.</li>
-  <li><strong>Say "I don't know" honestly.</strong> If retrieval finds
-  nothing relevant, the system says the documents don't cover it. It is
-  built to prefer an honest gap over a confident guess.</li>
-</ol></div>
+none enforce. Uplink enforces it as a pipeline — each step is code, not a
+polite request to a model:</p>
+
+<div class="diagram">
+  <div class="dtitle">Workflow · from question to published answer</div>
+  <div class="flowv">
+    <div class="dstep"><b>1 · Question arrives</b>
+      <span>Typed or spoken. Treated as untrusted data end to end — a question
+      can never carry instructions into the system. If the visitor limited the
+      question to specific documents, that selection travels with it.</span></div>
+    <div class="dstep"><b>2 · Queued</b>
+      <span>The web app contains no AI at all. Questions land in a queue as
+      plain files — a deliberate seam that lets different "brains" answer
+      without changing the product.</span></div>
+    <div class="dstep"><b>3 · Retrieve</b>
+      <span>Ranked search (BM25 over SQLite full-text indexing) pulls the best
+      passages — spread across multiple documents, restricted to the visitor's
+      selection, full passages with their source coordinates.</span></div>
+    <div class="dstep"><b>4 · Compose</b>
+      <span>The model sees only the numbered passages and the question. It
+      answers in a lead sentence plus short bullets, and cites by picking
+      passage <em>numbers</em> — it cannot invent a source, because citation
+      coordinates are copied from the index, never written by the model.</span></div>
+    <div class="dstep gate"><b>5 · Verification gate</b>
+      <span>Before anything is shown, every citation is checked against the
+      index: does this document exist here, and was it inside the visitor's
+      selection?</span>
+      <div class="fork">
+        <span class="chip ok">all citations check out → published</span>
+        <span class="chip no">any citation fails → answer refused</span>
+      </div></div>
+    <div class="dstep"><b>6 · Published, inspectable</b>
+      <span>The answer appears with its citations as buttons — each one opens
+      the exact passage so the reader can check the claim, and the interface
+      shows how many documents and passages the answer stood on.</span></div>
+  </div>
+</div>
+
 <p class="pull">Grounding here is a property of the pipeline, not a request
 in a prompt.</p>
-<p>Scoping works the same way: if a user limits a question to specific
-documents, that selection travels with the question, constrains retrieval,
-and is re-checked at publication. The checkbox is a contract, and the
-contract is enforced.</p>
+<p>And when retrieval finds only part of an answer, the system says exactly
+that: it bullets what the documents do contain and names what's missing.
+Built to prefer an honest gap over a confident guess.</p>
 
 <h2>Measured, not claimed</h2>
 <p>Accuracy claims in this field are usually adjectives. Uplink's are
@@ -152,12 +209,16 @@ ships in the repository:</p>
   did it rank (MRR).</li>
   <li><strong>Every published rate carries its sample size and a 95%
   confidence interval.</strong> A 90% score over ten questions is presented
-  as exactly that — a small sample with a wide interval — because overclaiming
-  is the failure the product exists to prevent.</li>
-  <li><strong>Every run is logged.</strong> The evaluation history is a file
-  in the repo; the in-app metrics panel re-scores the <em>live</em> index
-  against the published baseline, so a change that quietly degrades retrieval
-  shows up as drift, with the failing questions named.</li>
+  as exactly that — a small sample with a wide interval — because
+  overclaiming is the failure the product exists to prevent.</li>
+  <li><strong>Every run is logged, and drift is watched.</strong> The
+  evaluation history is a file in the repo; the in-app metrics panel
+  re-scores the <em>live</em> index against the published baseline, so a
+  change that quietly degrades retrieval shows up as drift — with the
+  failing questions named, turning a score into a to-do list.</li>
+  <li><strong>The panel never invents a number.</strong> Where nothing has
+  been measured it says "not measured." Answers the system can't verify are
+  labeled unverified on screen.</li>
 </ul>
 <table>
   <tr><th>Milestone</th><th>Set</th><th>First answer correct</th><th>Ranking quality (MRR)</th></tr>
@@ -166,39 +227,137 @@ ships in the repository:</p>
   <tr><td>Independent corpus (Apple, day 2)</td><td>10 questions</td><td><b>90%</b> (9/10)</td><td><b>0.900</b></td></tr>
 </table>
 <p>That 67% → 95% movement is the point of the harness: improvements were
-made <em>against a measurement</em>, run by run, not by feel. Where nothing
-has been measured, the metrics panel says "not measured" — it never fills in
-a number.</p>
+made <em>against a measurement</em>, run by run, not by feel.</p>
+
+<h2>From local to live</h2>
+<p>The demo you're reading on didn't start public. It earned its way out, in
+deliberate stages — and the interesting part is <em>who</em> answered the
+questions at each stage.</p>
+
+<h3>Stage 1 — private, human-supervised</h3>
+<p>The product ran on a private machine, over private documents, with all
+writes locked to that machine. Its answering "brain" was a supervised AI
+session with a human at the keyboard: a small <strong>watcher</strong>
+program monitored the question queue and summoned the session whenever a
+question arrived. That session worked under a written contract
+(<a href="https://github.com/evanderpool/uplink/blob/main/AGENT.md">AGENT.md</a>,
+in the repo): retrieve first, compose only from retrieved passages, honour
+the user's document selection, publish only through the verification gate.</p>
+<p>This phase is what made the verification pipeline trustworthy. Every
+feature — scoped questions, citations, the metrics panel, spreadsheet
+support — was exercised end to end with a person watching each answer come
+out, on real documents, before any autonomous system was allowed to touch
+the queue. The supervised sessions kept finding real issues, which is
+exactly what they were for: among them a scoping bug where a select-all
+control quietly ignored a deselected document — found, fixed, and pinned
+with a regression test the same day.</p>
+
+<h3>Stage 2 — the brain swap</h3>
+<p>Because the web app itself has no AI in it — questions go to a queue, and
+<em>something</em> answers through the verification gate — going public
+didn't mean rebuilding. It meant plugging a different brain into the same
+seam: an inexpensive API model answering autonomously, under the same
+contract, through the same gate. The product code didn't change.</p>
+
+<h3>Stage 3 — public, hardened</h3>
+<p>The public deployment is a separate, inspectable fork with a different
+trust posture: public documents only, exactly one write allowed from the
+internet (asking a question), a five-question limit per visitor, and a hard
+monthly spending cap upstream. The launch itself was gated behind a
+scheduled security review — the address wasn't shared until the posture
+passed inspection.</p>
+
+<div class="diagram">
+  <div class="dtitle">One engine · two trust postures</div>
+  <div class="twocol">
+    <div class="col">
+      <h4>Private edition <span class="tag" style="color:var(--good)">your machine</span></h4>
+      <ul>
+        <li>Your documents — nothing ever leaves the machine</li>
+        <li>All writes: upload, feedback, notes, tuning</li>
+        <li>Brain: supervised AI session, human at the keyboard, summoned by the watcher</li>
+        <li>No API cost at all</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Public demo <span class="tag" style="color:var(--brand-1)">this site</span></h4>
+      <ul>
+        <li>Public records only (ten Apple 10-K filings)</li>
+        <li>One write: asking — 5 questions per visitor, 3-day reset</li>
+        <li>Brain: autonomous API worker, ~1¢ per answer, spend-capped</li>
+        <li>Launch gated by a security review</li>
+      </ul>
+    </div>
+  </div>
+  <div class="sharedbar">Same engine · same retrieval · same verification gate —
+  only the trust posture changes</div>
+</div>
+
+<h2>Attention to detail, by example</h2>
+<p>A system like this is really a pile of small decisions. A few that show
+the standard the whole build was held to:</p>
+<ul>
+  <li><strong>A real-world file format, handled the same morning.</strong> A
+  batch of SEC filings arrived in legacy 1990s Excel format — unsupported.
+  Instead of asking the user to convert files, native support was built and
+  tested within hours; the test suite builds a valid legacy-format file
+  byte-by-byte so the tests depend on no extra software. Those same files are
+  the documents this demo answers from.</li>
+  <li><strong>Error messages that name the actual problem.</strong> Voice
+  input's first version said "could not hear that" for four different
+  failures. Now a blocked microphone, a wrong input device, an unreachable
+  speech service, and plain silence each get their own message with its own
+  fix — because one vague error hides four different solutions.</li>
+  <li><strong>Metrics a client can read.</strong> The quality panel says
+  "first answer correct" and "ranking quality," not hit@1 and MRR — the
+  technical terms live one layer down, in tooltips that also carry the exact
+  command that reproduces the number. Readable for a recruiter, checkable
+  for an engineer.</li>
+  <li><strong>Tuned against real questions after going live.</strong> The
+  first live test of a decade-spanning question exposed that ranked search
+  fed the model passages from a single filing (each annual report only
+  covers three years). Retrieval now deliberately spreads its reading across
+  multiple documents — and when a passage was found arriving cut off just
+  before the requested line item, the pipeline was fixed to hand the model
+  full passages. Each fix was verified against the live site and pinned with
+  tests.</li>
+  <li><strong>Even the limits are polite.</strong> A visitor who uses their
+  five questions is told exactly when they come back, and that keyword
+  search stays unlimited. Deselected documents stay readable on screen
+  instead of fading out. The interface never punishes curiosity.</li>
+</ul>
 
 <h2>How it was built</h2>
 <p>This project is also a demonstration of a working method. I directed the
-build; AI coding sessions executed it. The division of labor was strict and
-it's the reason the pace didn't cost quality:</p>
+build; AI coding sessions executed it. The division of labor was strict, and
+it's the reason two days of pace didn't cost quality:</p>
 <ul>
   <li><strong>I owned the decisions</strong> — the privacy model, what gets
   verified and how, the scope of every phase, what ships publicly versus
   stays private, cost ceilings, and the security gates. Each meaningful
   decision is written down in an append-only decision log.</li>
   <li><strong>AI sessions owned the keystrokes</strong> — implementation,
-  test-writing, and refactoring, working phase by phase against the scope I
-  set.</li>
+  test-writing, refactoring — phase by phase against the scope I set, with
+  the supervised-testing loop above proving each phase on real documents
+  before the next began.</li>
   <li><strong>Nothing merged on trust.</strong> Every phase landed with
-  automated tests (25 on day one, 343 today) and went through adversarial
-  review passes — dedicated sessions instructed to attack the work, whose
-  findings were fixed and then pinned as regression tests so they can't
-  come back.</li>
+  automated tests (25 on day one, 343 today), and dedicated adversarial
+  review passes were run against each surface — sessions instructed to
+  attack the work. Those reviews produced over thirty findings, including
+  one critical; every one was fixed and then pinned as a regression test so
+  it cannot quietly return.</li>
 </ul>
-<p>The timeline, verifiable from the commit history:</p>
 <table>
   <tr><th>Day</th><th>Shipped</th></tr>
-  <tr><td><b>Day 1</b></td><td>Core engine: multi-format indexing, ranked search,
-  evaluation harness, first baseline. Then collections, a local web
-  workspace, and the question-answer loop with citation verification.</td></tr>
-  <tr><td><b>Day 2</b></td><td>Metrics panel with confidence intervals and drift
-  detection; mechanical grounding enforcement; legacy Excel support (driven
-  by a real batch of SEC filings that arrived that morning); voice input;
-  and this public demo — deployed, rate-limited, and answering on its
-  own.</td></tr>
+  <tr><td><b>Day 1</b></td><td>Core engine: multi-format indexing, ranked
+  search, evaluation harness, first baseline (67%). Then document
+  collections, the local web workspace, the question queue with the
+  supervised brain, and citation verification.</td></tr>
+  <tr><td><b>Day 2</b></td><td>Metrics panel with confidence intervals and
+  drift detection; grounding made mechanically enforced; legacy Excel
+  support driven by a real batch of filings; voice input; source search and
+  filtering; and this public demo — deployed, rate-limited, tuned against
+  live questions, and answering on its own.</td></tr>
 </table>
 
 <h2>Engineering choices worth noticing</h2>
@@ -207,22 +366,19 @@ it's the reason the pace didn't cost quality:</p>
   runs on Python's standard library and SQLite — no web framework, no vector
   database, no orchestration stack. Deployment is "copy the folder." Format
   readers are optional add-ons that degrade gracefully.</li>
-  <li><strong>A deliberate seam for the answering brain.</strong> Questions
-  go into a queue; <em>something</em> answers them through the same
-  verification gate. Locally that's a supervised session; on this demo it's
-  an inexpensive API model. Swapping brains changed no product code — the
-  seam was designed in from the start.</li>
+  <li><strong>The brain seam.</strong> Keeping the AI out of the product and
+  behind a queue meant the supervised brain and the autonomous brain were
+  interchangeable — the swap that took this demo live changed no product
+  code, and the same seam is how a future client deployment chooses its own
+  trust level.</li>
   <li><strong>Cost designed to a ceiling, not a hope.</strong> Free hosting;
-  an answering model that costs about a penny per question; a per-visitor
-  limit of five questions with a three-day reset; and a hard monthly spend
-  cap upstream. The worst possible outcome is "the demo pauses" — never a
+  a penny-per-question model; per-visitor limits; a hard monthly spend cap
+  upstream. The worst possible outcome is "the demo pauses" — never a
   surprise bill.</li>
-  <li><strong>Security posture by construction.</strong> On a private
-  machine, all writes are localhost-only. On the public internet, exactly
-  one write exists — asking a question — and it's rate-limited. Uploads,
-  feedback, and administration simply do not exist on the public surface.
-  The public launch was additionally gated behind a scheduled security
-  review.</li>
+  <li><strong>Honesty as an interface principle.</strong> Unmeasured numbers
+  say "not measured." Unverified answers are labeled. Partial coverage is
+  answered partially with the gap named. The product's credibility budget is
+  spent nowhere.</li>
 </ul>
 
 <h2>Check everything on this page</h2>
@@ -239,6 +395,9 @@ can inspect.</p>
   citation checking in <code>uplink/asks.py</code>, the demo's answering
   worker in <code>uplink/api_brain.py</code>, the visitor limit in
   <code>uplink/ratelimit.py</code>.</li>
+  <li><strong>The supervised-brain contract</strong> is
+  <a href="https://github.com/evanderpool/uplink/blob/main/AGENT.md">AGENT.md</a>
+  in the engine repo — the written rules every brain answers under.</li>
   <li><strong>The two-day timeline</strong> is the public commit history of
   <a href="https://github.com/evanderpool/uplink">the engine repo</a>.</li>
 </ul>

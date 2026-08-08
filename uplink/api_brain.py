@@ -132,8 +132,12 @@ def answer_one(db_path: Path, asks_dir: Path, request: dict,
             return fail("no sources are selected — pick at least one document")
         include = _doc_pairs(docs)
 
+    # max_text: the search API trims chunk text for display; the brain needs
+    # the whole passage — a financial table cut off mid-sheet loses exactly
+    # the line the question was about.
     hits = _diversify(
-        search(db_path, question, k=32, collection=collection, include=include),
+        search(db_path, question, k=32, collection=collection, include=include,
+               max_text=4000),
         per_doc=2, total=12)
     if not hits:
         asks_mod.write_answer(
