@@ -24,7 +24,7 @@ from pathlib import Path
 from . import asks as asks_mod
 from .search import search
 
-MODEL = os.environ.get("UPLINK_BRAIN_MODEL", "claude-haiku-4-5")
+MODEL = os.environ.get("UPLINK_BRAIN_MODEL", "claude-sonnet-5")
 MAX_QUESTION_CHARS = 500
 POLL_SECONDS = 2.0
 

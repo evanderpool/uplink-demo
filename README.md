@@ -1,15 +1,21 @@
 # Uplink — Public Demo
 
+**▶ Live demo: https://uplink-demo.onrender.com** · **[Read the case study](CASE-STUDY.md)**
+
 A live, internet-reachable demo of [Uplink](https://github.com/evanderpool/uplink),
 a local-first document retrieval system. This repo is a deployment fork: same
 engine, different trust posture.
+
+> Free hosting sleeps when idle — the first visit after a nap takes ~30–60s to
+> wake. A full write-up of how this was built, verified, and taken from local
+> testing to live is in **[CASE-STUDY.md](CASE-STUDY.md)**.
 
 **What's different from the real Uplink:**
 
 | | Uplink (the product) | This demo |
 |---|---|---|
 | Where documents live | Your machine, never leave it | Public records only: ten Apple 10-K annual reports (SEC filings, FY2016–FY2025) in their original `.xls` format, shipped in `demo-docs/` |
-| Who answers questions | A supervised Claude Code session ("borrowed brain") | An API worker (`uplink/api_brain.py`) calling Claude Haiku |
+| Who answers questions | A supervised Claude Code session ("borrowed brain") | An API worker (`uplink/api_brain.py`) calling the Claude API |
 | Writes | Uploads/feedback/notes on localhost | All disabled except asking a question |
 | Ask limits | None | 5 questions per visitor, back after 3 days (`uplink/ratelimit.py`) |
 
