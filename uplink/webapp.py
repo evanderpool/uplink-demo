@@ -93,6 +93,7 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 STATIC_FILES = {
     "index.html": "text/html; charset=utf-8",
     "case-study.html": "text/html; charset=utf-8",
+    "performance.html": "text/html; charset=utf-8",
     "app.css": "text/css; charset=utf-8",
     "app.js": "text/javascript; charset=utf-8",
     "gsap.min.js": "text/javascript; charset=utf-8",
@@ -483,6 +484,8 @@ def make_handler(
                     self._static("index.html")
                 elif url.path == "/case-study":
                     self._static("case-study.html")
+                elif url.path == "/performance":
+                    self._static("performance.html")
                 elif url.path.startswith("/static/"):
                     self._static(url.path.removeprefix("/static/"))
                 elif url.path == "/api/sources":

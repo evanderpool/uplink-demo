@@ -222,9 +222,32 @@ def test_case_study_page_is_served(demo_server):
     text = body.decode("utf-8")
     # The recruiter-facing claims that must never silently vanish.
     assert "Case Study" in text or "Case study" in text
-    assert "343" in text          # test count
+    assert "361" in text          # test count
     assert "confidence interval" in text
     assert "eval-history.jsonl" in text  # claims link to their evidence
+    assert "Directed across the stack" in text  # the operator-role section
+    assert "/performance" in text               # links to the detail page
+
+
+def test_performance_page_is_served(demo_server):
+    url, _ = demo_server
+    status, body = _get(url + "/performance")
+    assert status == 200
+    text = body.decode("utf-8")
+    assert "Keyword vs. hybrid" in text
+    assert "93%" in text and "53%" in text       # the measured head-to-head
+    assert "eval-history.jsonl" in text          # links to the raw evidence
+
+
+def test_metrics_panel_renamed_from_studio():
+    """The right panel is 'Metrics' (was 'Studio') and links to the detail
+    page — pin both so a future edit can't silently revert the rename."""
+    html = (Path(__file__).resolve().parents[1] / "uplink" / "static" / "index.html").read_text(
+        encoding="utf-8"
+    )
+    assert "<h2>Metrics</h2>" in html
+    assert "<h2>Studio</h2>" not in html
+    assert 'href="/performance"' in html
 
 
 def test_brain_answers_are_formatted_for_reading():

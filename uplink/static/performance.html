@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Uplink — Performance detail</title>
+<style>
+  :root {
+    --brand-1: #5b5bd6; --brand-2: #8b5bd6; --good: #1a9c6b; --bad: #c4453f;
+    --ink: #1c1c28; --ink-2: #4a4a5a; --muted: #8a8a9a;
+    --bg: #f7f6fb; --surface: #ffffff; --line: #e4e2ee; --soft: #efedf8;
+    --grey: #b9b7c8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #ececf4; --ink-2: #b8b8c8; --muted: #77778a;
+            --bg: #14141c; --surface: #1d1d28; --line: #2c2c3a; --soft: #232331;
+            --grey: #45455a; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink);
+         font: 15px/1.6 system-ui, -apple-system, sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 22px 80px; }
+  header.hero { padding: 44px 0 26px; border-bottom: 1px solid var(--line); }
+  .kicker { font-size: 12px; font-weight: 700; letter-spacing: .12em;
+            text-transform: uppercase; color: var(--brand-1); }
+  h1 { font-size: 32px; line-height: 1.15; letter-spacing: -0.02em;
+       margin: 8px 0 10px; font-family: Georgia, serif; }
+  .sub { font-size: 16px; color: var(--ink-2); max-width: 60ch; }
+  .nav { margin-top: 16px; font-size: 13.5px; }
+  .nav a { color: var(--brand-1); text-decoration: none; margin-right: 16px; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .07em;
+       color: var(--brand-1); margin: 42px 0 4px; }
+  .h2sub { font-size: 13.5px; color: var(--muted); margin-bottom: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line);
+          border-radius: 16px; padding: 22px 24px; margin: 14px 0; }
+
+  /* stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+           gap: 12px; margin: 14px 0; }
+  .tile { background: var(--surface); border: 1px solid var(--line);
+          border-radius: 12px; padding: 15px 16px; }
+  .tile b { display: block; font-size: 24px; letter-spacing: -0.01em; }
+  .tile .up { color: var(--good); font-size: 13px; font-weight: 600; }
+  .tile span { font-size: 12px; color: var(--muted); }
+
+  /* horizontal bar rows */
+  .bars { display: flex; flex-direction: column; gap: 16px; }
+  .barrow { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
+  .barrow .lbl { font-size: 13px; color: var(--ink-2); text-align: right; }
+  .barrow .lbl small { display: block; color: var(--muted); font-size: 11px; }
+  .track { position: relative; }
+  .bar { height: 26px; border-radius: 7px; display: flex; align-items: center;
+         justify-content: flex-end; padding-right: 9px; color: #fff;
+         font-size: 12.5px; font-weight: 700; min-width: 42px;
+         transition: width .3s ease; }
+  .bar.b25 { background: var(--grey); color: var(--ink); }
+  .bar.hyb { background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); }
+  .bar.plain { background: color-mix(in srgb, var(--brand-1) 78%, transparent); }
+  .pair { display: flex; flex-direction: column; gap: 6px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--muted);
+            margin: 4px 0 2px; }
+  .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+            vertical-align: -1px; margin-right: 5px; }
+
+  /* dumbbell rank rows */
+  .rank { display: grid; grid-template-columns: 1fr auto; gap: 10px;
+          align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .rank:last-child { border-bottom: none; }
+  .rank .q { font-size: 13px; color: var(--ink-2); }
+  .rank .move { font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 9px;
+          font-weight: 700; font-size: 12px; }
+  .pill.from { background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--bad); }
+  .pill.to { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+  .arrow { color: var(--muted); margin: 0 6px; }
+
+  .note { font-size: 12.5px; color: var(--muted); margin-top: 12px;
+          border-left: 3px solid var(--line); padding-left: 12px; }
+  code { font: 12.5px ui-monospace, Consolas, monospace; background: var(--soft);
+         border-radius: 4px; padding: 1px 6px; }
+  .foot { margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--line);
+          font-size: 13px; color: var(--muted); }
+  .foot a { color: var(--brand-1); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Performance detail</div>
+  <h1>The numbers behind the demo</h1>
+  <p class="sub">Every figure here is produced by the repository's own
+  evaluation harness and logged to a file — reproducible, not asserted.
+  Small samples are shown as small samples.</p>
+  <p class="nav"><a href="/">← back to the demo</a>
+    <a href="/case-study">read the case study</a>
+    <a href="https://github.com/evanderpool/uplink-demo/blob/main/fixtures/eval-history.jsonl">the raw eval log ↗</a></p>
+</header>
+
+<h2>At a glance</h2>
+<div class="tiles">
+  <div class="tile"><b>hybrid</b><span>live retrieval mode (BM25 + vectors)</span></div>
+  <div class="tile"><b>93%<span class="up"> ↑ from 53%</span></b><span>first-answer accuracy, 10-K set</span></div>
+  <div class="tile"><b>361<span class="up"> ↑ from 25</span></b><span>automated tests, all passing</span></div>
+  <div class="tile"><b>~2¢</b><span>cost per answered question</span></div>
+  <div class="tile"><b>728</b><span>passages indexed & embedded</span></div>
+  <div class="tile"><b>0</b><span>ungrounded answers published</span></div>
+</div>
+
+<h2>Keyword vs. hybrid retrieval</h2>
+<p class="h2sub">The headline result: adding semantic vectors to keyword search,
+measured on the same 15 golden questions over the ten Apple 10-K filings.</p>
+<div class="card">
+  <div class="legend">
+    <span><span class="swatch" style="background:var(--grey)"></span>BM25 (keyword only)</span>
+    <span><span class="swatch" style="background:var(--brand-1)"></span>Hybrid (BM25 + vectors)</span>
+  </div>
+  <div class="bars" style="margin-top:14px">
+    <div class="barrow">
+      <div class="lbl">First answer correct</div>
+      <div class="pair">
+        <div class="bar b25" style="width:53%">53%</div>
+        <div class="bar hyb" style="width:93%">93%</div>
+      </div>
+    </div>
+    <div class="barrow">
+      <div class="lbl">Ranking quality<small>MRR, 0–1</small></div>
+      <div class="pair">
+        <div class="bar b25" style="width:70.2%">0.702</div>
+        <div class="bar hyb" style="width:96.7%">0.967</div>
+      </div>
+    </div>
+    <div class="barrow">
+      <div class="lbl">Correct in top 5</div>
+      <div class="pair">
+        <div class="bar b25" style="width:93%">93%</div>
+        <div class="bar hyb" style="width:100%">100%</div>
+      </div>
+    </div>
+  </div>
+  <p class="note">15-question set, on-device / API embeddings, deterministic
+  across runs. Near-duplicate filings are the case where keyword search is
+  <em>most</em> disadvantaged (it matches common words and loses the year),
+  so this gain would likely be smaller on a corpus of distinct documents —
+  reported honestly rather than as a universal number.</p>
+</div>
+
+<h2>Where hybrid changed the answer</h2>
+<p class="h2sub">Per-question ranks, BM25 → hybrid, on every question whose
+result moved. A rank of 1 is the correct filing first; 0 is a miss. Nothing
+regressed.</p>
+<div class="card">
+  <div class="rank"><div class="q">Selling, general &amp; administrative costs, FY2022</div>
+    <div class="move"><span class="pill from">miss</span><span class="arrow">→</span><span class="pill to">1st</span></div></div>
+  <div class="rank"><div class="q">Money Apple made selling iPhones, FY2021</div>
+    <div class="move"><span class="pill from">3rd</span><span class="arrow">→</span><span class="pill to">1st</span></div></div>
+  <div class="rank"><div class="q">Total net sales, FY2016</div>
+    <div class="move"><span class="pill from">2nd</span><span class="arrow">→</span><span class="pill to">1st</span></div></div>
+  <div class="rank"><div class="q">Net income, FY2017</div>
+    <div class="move"><span class="pill from">2nd</span><span class="arrow">→</span><span class="pill to">1st</span></div></div>
+  <div class="rank"><div class="q">Total net sales, FY2025</div>
+    <div class="move"><span class="pill from">2nd</span><span class="arrow">→</span><span class="pill to">1st</span></div></div>
+  <div class="rank"><div class="q">Profit after tax, FY2023</div>
+    <div class="move"><span class="pill from">2nd</span><span class="arrow">→</span><span class="pill to">1st</span></div></div>
+  <div class="rank"><div class="q">Services revenue, FY2019</div>
+    <div class="move"><span class="pill from">5th</span><span class="arrow">→</span><span class="pill to">2nd</span></div></div>
+  <p class="note">The SG&amp;A-2022 row is the clearest case: keyword search
+  returned the 2016, 2017, and 2025 filings — it matched the words "selling,
+  general, administrative" and lost the year. Hybrid understood the question
+  was about 2022 and returned that filing first.</p>
+</div>
+
+<h2>Every measured evaluation run</h2>
+<p class="h2sub">All accuracy figures the project has ever logged, each on its
+own question set with its own sample size. These are <em>distinct</em>
+evaluations — not one metric over time — so read each bar against its label,
+not its neighbours.</p>
+<div class="card">
+  <div class="bars">
+    <div class="barrow"><div class="lbl">First baseline<small>golden · n=18</small></div>
+      <div class="track"><div class="bar plain" style="width:67%">67%</div></div></div>
+    <div class="barrow"><div class="lbl">Industry corpora<small>industry · n=13</small></div>
+      <div class="track"><div class="bar plain" style="width:92%">92%</div></div></div>
+    <div class="barrow"><div class="lbl">+ spreadsheets<small>industry · n=19</small></div>
+      <div class="track"><div class="bar plain" style="width:95%">95%</div></div></div>
+    <div class="barrow"><div class="lbl">Apple manuals<small>apple · n=10</small></div>
+      <div class="track"><div class="bar plain" style="width:90%">90%</div></div></div>
+    <div class="barrow"><div class="lbl">10-K · keyword<small>10-K · n=15</small></div>
+      <div class="track"><div class="bar b25" style="width:53%">53%</div></div></div>
+    <div class="barrow"><div class="lbl">10-K · hybrid<small>10-K · n=15</small></div>
+      <div class="track"><div class="bar hyb" style="width:93%">93%</div></div></div>
+  </div>
+  <p class="note">First-answer accuracy (hit@1) per run. The 67% → 95% jump on
+  the early sets came from ranking and corpus work, measured run by run; the
+  53% → 93% pair is the keyword-vs-hybrid head-to-head on identical questions.
+  Reproduce any of these with
+  <code>python scripts/eval_compare.py</code> or <code>python -m uplink eval</code>.</p>
+</div>
+
+<h2>How the honesty is enforced</h2>
+<div class="card">
+  <div class="tiles" style="margin:0">
+    <div class="tile"><b>100%</b><span>published answers with a verified citation</span></div>
+    <div class="tile"><b>by index</b><span>citations picked by chunk number, coordinates copied from the index</span></div>
+    <div class="tile"><b>refused</b><span>any answer citing an unindexed or out-of-scope document</span></div>
+    <div class="tile"><b>"not measured"</b><span>what the panel shows for anything unmeasured — never a guess</span></div>
+  </div>
+  <p class="note">Grounding is a property of the pipeline, not a prompt: every
+  citation is checked against the index before an answer is shown, so a claim
+  attributed to a document that isn't there — or one the visitor deselected —
+  cannot be published at all.</p>
+</div>
+
+<div class="foot">
+  <p>All figures reproducible from
+  <a href="https://github.com/evanderpool/uplink-demo">the repository</a>.
+  <strong>Erick Vanderpool</strong> —
+  <a href="/case-study">case study</a> ·
+  <a href="/">live demo</a> ·
+  <a href="https://github.com/evanderpool">github.com/evanderpool</a></p>
+</div>
+
+</div>
+</body>
+</html>

@@ -640,6 +640,13 @@ mark { background: color-mix(in srgb, var(--brand-3) 26%, transparent);
 }
 
 .studio-block { margin-bottom: 20px; }
+.metrics-expand {
+  font-size: 11.5px; font-weight: 650; text-decoration: none;
+  color: var(--brand-1); margin-left: auto; margin-right: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-1) 35%, transparent);
+  border-radius: var(--r-pill); padding: 3px 10px; white-space: nowrap;
+}
+.metrics-expand:hover { background: color-mix(in srgb, var(--brand-1) 10%, transparent); }
 
 .report-links { display: flex; flex-wrap: wrap; gap: 7px; }
 .report-links a {

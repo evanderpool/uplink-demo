@@ -33,7 +33,7 @@ Uplink indexes a folder of mixed documents — Markdown, PDF, Word, modern and
 legacy Excel, CSV — into a single searchable database on the machine that owns
 them. The workspace is three panels: your **sources** on the left (searchable,
 filterable by type, each one selectable in or out of scope), the
-**conversation** in the middle, and a **studio** of live quality metrics on the
+**conversation** in the middle, and a **Metrics** panel of live quality data on the
 right. Two ways to get answers:
 
 - **Instant keyword search** across every document, with the matching passage
@@ -116,7 +116,8 @@ repository:
 | Independent corpus (Apple, day 2) | 10 questions | **90%** (9/10) | **0.900** |
 
 That 67% → 95% movement is the point of the harness: improvements were made
-*against a measurement*, run by run, not by feel.
+*against a measurement*, run by run, not by feel. **[See the full performance
+detail, with charts →](https://uplink-demo.onrender.com/performance)**
 
 ### The harness in action: keyword vs. semantic search, measured
 
@@ -250,10 +251,47 @@ reason two days of pace didn't cost quality:
   supervised-testing loop above proving each phase on real documents before the
   next began.
 - **Nothing merged on trust.** Every phase landed with automated tests (25 on
-  day one, 343 today), and dedicated adversarial review passes were run against
+  day one, 361 today), and dedicated adversarial review passes were run against
   each surface — sessions instructed to attack the work. Those reviews produced
   over thirty findings, including one critical; every one was fixed and then
   pinned as a regression test so it cannot quietly return.
+
+### Directed across the stack — not just delegated
+
+The decisions that shaped this system reach into every layer, and each was
+mine to make and defend. That breadth is the real evidence of understanding
+it end to end, not just steering it:
+
+- **Retrieval.** I set the "keyword-first, add vectors only if the numbers
+  justify it" strategy — and when semantic search went in, I chose the
+  embedder by *trust boundary* (on-device where data is confidential, an API
+  where it's public), picked the provider, and understood that embedding is a
+  one-time cost per corpus, not a per-question one. Knowing *why* BM25, *why*
+  RRF fusion, and *when* a vector layer earns its place is the difference
+  between using a technique and understanding it.
+- **Grounding.** The verification pipeline exists because I kept pressing the
+  hard questions: *could this answer have come from outside the documents?*
+  and *when I deselect a source, is it actually excluded from retrieval?*
+  Those two questions turned a comfortable assumption into a
+  mechanically-enforced guarantee — and the second one surfaced a real scoping
+  bug that was fixed the same day.
+- **Security.** The public trust posture — public documents only, exactly one
+  write allowed from the internet, a per-visitor limit — were my calls, and I
+  directed the adversarial review that caught the rate-limit bypass before it
+  could ever cost anything.
+- **Cost.** I set the spend ceilings and the visitor limits, and chose free
+  hosting with eyes open to its one tradeoff (the cold-start delay) against
+  its zero cost — a deliberate engineering decision, not a default.
+- **Deployment.** Offered a more elaborate cloud rearchitecture, I chose the
+  simpler path that fit the product: a deliberate "move in, don't renovate"
+  call, weighed and defended, not a limitation.
+- **Evaluation.** I insisted every improvement show its before/after numbers
+  before it counted — which is exactly why the hybrid retriever shipped with a
+  measured 53% → 93%, and not an adjective.
+
+The AI wrote the code. The judgment about what to build, what to verify, what
+to ship, and what to *prove* was the throughline I owned from the first commit
+to the live demo.
 
 That review discipline kept paying out. When semantic search was added, an
 independent review agent caught a subtle correctness bug: a guard the code's

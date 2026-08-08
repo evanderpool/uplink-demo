@@ -138,7 +138,7 @@ and legacy Excel, CSV — into a single searchable database on the machine that
 owns them. The workspace is three panels: your <strong>sources</strong> on
 the left (searchable, filterable by type, each one selectable in or out of
 scope), the <strong>conversation</strong> in the middle, and a
-<strong>studio</strong> of live quality metrics on the right. Two ways to get
+<strong>Metrics</strong> panel of live quality data on the right. Two ways to get
 answers:</p>
 <ul>
   <li><strong>Instant keyword search</strong> across every document, with the
@@ -227,7 +227,9 @@ ships in the repository:</p>
   <tr><td>Independent corpus (Apple, day 2)</td><td>10 questions</td><td><b>90%</b> (9/10)</td><td><b>0.900</b></td></tr>
 </table>
 <p>That 67% → 95% movement is the point of the harness: improvements were
-made <em>against a measurement</em>, run by run, not by feel.</p>
+made <em>against a measurement</em>, run by run, not by feel.
+<a href="/performance"><strong>See the full performance detail, with charts
+→</strong></a></p>
 
 <h3>The harness in action: keyword vs. semantic search, measured</h3>
 <p>The system started on <strong>BM25</strong> — mature keyword ranking,
@@ -385,6 +387,43 @@ it's the reason two days of pace didn't cost quality:</p>
   keyword search. Fixed and regression-tested the same session. That is the
   point of adversarial review: it finds the bug that looks like it works.</li>
 </ul>
+
+<h3>Directed across the stack — not just delegated</h3>
+<p>The decisions that shaped this system reach into every layer, and each was
+mine to make and defend. That breadth is the real evidence of understanding
+it end to end, not just steering it:</p>
+<ul>
+  <li><strong>Retrieval.</strong> I set the "keyword-first, add vectors only
+  if the numbers justify it" strategy — and when semantic search went in, I
+  chose the embedder by <em>trust boundary</em> (on-device where data is
+  confidential, an API where it's public), picked the provider, and understood
+  that embedding is a one-time cost per corpus, not a per-question one. Knowing
+  <em>why</em> BM25, <em>why</em> RRF fusion, and <em>when</em> a vector layer
+  earns its place is the difference between using a technique and understanding
+  it.</li>
+  <li><strong>Grounding.</strong> The verification pipeline exists because I
+  kept pressing the hard questions: <em>could this answer have come from
+  outside the documents?</em> and <em>when I deselect a source, is it actually
+  excluded from retrieval?</em> Those turned a comfortable assumption into a
+  mechanically-enforced guarantee — and the second surfaced a real scoping bug,
+  fixed the same day.</li>
+  <li><strong>Security.</strong> The public trust posture — public documents
+  only, exactly one write allowed from the internet, a per-visitor limit —
+  were my calls, and I directed the adversarial review that caught the
+  rate-limit bypass before it could cost anything.</li>
+  <li><strong>Cost.</strong> I set the spend ceilings and visitor limits, and
+  chose free hosting with eyes open to its one tradeoff (the cold-start delay)
+  against its zero cost — a deliberate decision, not a default.</li>
+  <li><strong>Deployment.</strong> Offered a more elaborate cloud
+  rearchitecture, I chose the simpler path that fit the product: a deliberate
+  "move in, don't renovate" call, weighed and defended.</li>
+  <li><strong>Evaluation.</strong> I insisted every improvement show its
+  before/after numbers before it counted — which is exactly why the hybrid
+  retriever shipped with a measured 53% → 93%, and not an adjective.</li>
+</ul>
+<p>The AI wrote the code. The judgment about what to build, what to verify,
+what to ship, and what to <em>prove</em> was the throughline I owned from the
+first commit to the live demo.</p>
 <table>
   <tr><th>Day</th><th>Shipped</th></tr>
   <tr><td><b>Day 1</b></td><td>Core engine: multi-format indexing, ranked
