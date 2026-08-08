@@ -198,6 +198,27 @@ def test_demo_allows_asks_but_nothing_else(demo_server):
     assert status == 403
 
 
+def test_case_study_page_is_served(demo_server):
+    url, _ = demo_server
+    status, body = _get(url + "/case-study")
+    assert status == 200
+    text = body.decode("utf-8")
+    # The recruiter-facing claims that must never silently vanish.
+    assert "Case Study" in text or "Case study" in text
+    assert "343" in text          # test count
+    assert "confidence interval" in text
+    assert "eval-history.jsonl" in text  # claims link to their evidence
+
+
+def test_brain_answers_are_formatted_for_reading():
+    """Answers open with a direct sentence and carry bullets — one paragraph
+    walls of text are a product decision, not a model mood."""
+    from uplink.api_brain import SYSTEM
+    assert "bullet" in SYSTEM.lower()
+    assert "•" in SYSTEM
+    assert "ONE short sentence" in SYSTEM
+
+
 def test_demo_status_reports_asks_without_writes(demo_server):
     url, _ = demo_server
     _, body = _get(url + "/api/status")

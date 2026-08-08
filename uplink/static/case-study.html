@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Uplink — Case Study · Erick Vanderpool</title>
+<style>
+  :root {
+    --brand-1: #5b5bd6; --brand-2: #8b5bd6; --good: #1a9c6b;
+    --ink: #1c1c28; --ink-2: #4a4a5a; --muted: #8a8a9a;
+    --bg: #f7f6fb; --surface: #ffffff; --line: #e4e2ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #ececf4; --ink-2: #b8b8c8; --muted: #77778a;
+            --bg: #14141c; --surface: #1d1d28; --line: #2c2c3a; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink);
+         font: 16px/1.65 Georgia, 'Times New Roman', serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px 80px; }
+  header.hero { padding: 56px 0 36px; border-bottom: 1px solid var(--line); }
+  .kicker { font-family: system-ui, sans-serif; font-size: 12px; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--brand-1); }
+  h1 { font-size: 38px; line-height: 1.15; letter-spacing: -0.02em; margin: 10px 0 14px; }
+  .sub { font-size: 18px; color: var(--ink-2); }
+  .byline { font-family: system-ui, sans-serif; font-size: 13.5px; color: var(--muted);
+            margin-top: 18px; }
+  .byline a { color: var(--brand-1); text-decoration: none; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+           gap: 12px; margin: 34px 0 8px; font-family: system-ui, sans-serif; }
+  .fact { background: var(--surface); border: 1px solid var(--line);
+          border-radius: 12px; padding: 14px 16px; }
+  .fact b { display: block; font-size: 21px; letter-spacing: -0.01em; }
+  .fact span { font-size: 12px; color: var(--muted); }
+  h2 { font-size: 24px; letter-spacing: -0.01em; margin: 46px 0 14px; }
+  h3 { font-family: system-ui, sans-serif; font-size: 14px; text-transform: uppercase;
+       letter-spacing: .08em; color: var(--brand-1); margin: 26px 0 8px; }
+  p { margin: 0 0 14px; color: var(--ink-2); }
+  p strong, li strong { color: var(--ink); }
+  ul, ol { margin: 0 0 14px 22px; color: var(--ink-2); }
+  li { margin-bottom: 8px; }
+  .card { background: var(--surface); border: 1px solid var(--line);
+          border-radius: 14px; padding: 20px 22px; margin: 18px 0; }
+  .flow { font-family: system-ui, sans-serif; font-size: 14.5px; }
+  .flow li { margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0;
+          font-family: system-ui, sans-serif; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line);
+           color: var(--ink-2); vertical-align: top; }
+  th { color: var(--muted); font-size: 12px; text-transform: uppercase;
+       letter-spacing: .06em; }
+  td b { color: var(--ink); }
+  .pull { border-left: 3px solid var(--brand-1); padding: 4px 0 4px 18px;
+          margin: 20px 0; font-size: 18px; color: var(--ink); font-style: italic; }
+  a { color: var(--brand-1); }
+  .cta { display: inline-block; font-family: system-ui, sans-serif; font-weight: 600;
+         font-size: 14.5px; text-decoration: none; color: #fff !important;
+         background: linear-gradient(120deg, var(--brand-1), var(--brand-2));
+         border-radius: 999px; padding: 11px 22px; margin: 6px 10px 6px 0; }
+  .cta.ghost { background: none; border: 1.5px solid var(--brand-1);
+               color: var(--brand-1) !important; }
+  .foot { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line);
+          font-family: system-ui, sans-serif; font-size: 13.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Case study · Artificial Management</div>
+  <h1>Uplink: document answers you can check</h1>
+  <p class="sub">A private, self-hosted system that answers questions from an
+  organization's own documents — and refuses to publish any answer it cannot
+  prove came from them.</p>
+  <p class="byline">Built and directed by <strong>Erick Vanderpool</strong> ·
+    <a href="https://github.com/evanderpool/uplink">engine source</a> ·
+    <a href="https://github.com/evanderpool/uplink-demo">demo source</a> ·
+    <a href="/">live demo</a></p>
+  <div class="facts">
+    <div class="fact"><b>2 days</b><span>first commit → live public demo</span></div>
+    <div class="fact"><b>343</b><span>automated tests, all passing</span></div>
+    <div class="fact"><b>95%</b><span>first-answer accuracy, measured (19-question set)</span></div>
+    <div class="fact"><b>~1¢</b><span>cost per answered question</span></div>
+  </div>
+</header>
+
+<h2>The problem</h2>
+<p>Every organization sits on documents that hold real answers — filings,
+manuals, policies, contracts. Getting those answers out has two failure modes.
+General-purpose chatbots answer fluently from nowhere in particular: when the
+answer matters, you can't tell whether it came from your documents or from
+thin air. And most document-AI services solve that by making you upload
+everything to someone else's servers — a non-starter for anything
+confidential.</p>
+<p>Uplink is built on a different premise: <strong>the documents stay where
+they are, and every answer must prove where it came from.</strong></p>
+
+<h2>The product</h2>
+<p>Uplink indexes a folder of mixed documents — Markdown, PDF, Word, modern
+and legacy Excel, CSV — into a single searchable database on the machine that
+owns them. From there it offers two things:</p>
+<ul>
+  <li><strong>Instant keyword search</strong> across every document, with the
+  matching passage highlighted and one click to the original file.</li>
+  <li><strong>Asked-and-answered questions</strong>: plain-language questions
+  get plain-language answers, composed <em>only</em> from retrieved passages,
+  with citations that open the exact spot in the exact document.</li>
+</ul>
+<p>This public demo runs the same engine against ten years of Apple's annual
+reports — public SEC filings, in their original Excel format. Ask it about a
+decade of revenue and margins; click any citation and land on the actual row
+of the actual filing. The private edition points at your own folder and
+nothing ever leaves your machine — that difference in trust posture is a
+<a href="https://github.com/evanderpool/uplink-demo">deliberate, inspectable
+deployment fork</a>, not a marketing line.</p>
+
+<h2>How answers stay honest</h2>
+<p>"The answer comes from your documents" is a promise most systems make and
+none enforce. Uplink enforces it in code, at four points:</p>
+<div class="card"><ol class="flow">
+  <li><strong>Retrieve first.</strong> The question runs through ranked search
+  (BM25 over SQLite full-text indexing). The answering model sees only the
+  passages retrieval returned — numbered, with their source coordinates.</li>
+  <li><strong>Cite by number, not by name.</strong> The model doesn't write
+  citations; it picks passage numbers from the list it was shown. The
+  citation coordinates — file, section, position — are copied from the index,
+  never generated. A model cannot cite a document it was never given.</li>
+  <li><strong>Verify before publishing.</strong> Before any answer is shown,
+  every citation is checked against the index. A citation naming a document
+  that isn't there — or one the user deselected — causes the answer to be
+  refused, not displayed.</li>
+  <li><strong>Say "I don't know" honestly.</strong> If retrieval finds
+  nothing relevant, the system says the documents don't cover it. It is
+  built to prefer an honest gap over a confident guess.</li>
+</ol></div>
+<p class="pull">Grounding here is a property of the pipeline, not a request
+in a prompt.</p>
+<p>Scoping works the same way: if a user limits a question to specific
+documents, that selection travels with the question, constrains retrieval,
+and is re-checked at publication. The checkbox is a contract, and the
+contract is enforced.</p>
+
+<h2>Measured, not claimed</h2>
+<p>Accuracy claims in this field are usually adjectives. Uplink's are
+numbers with sample sizes, produced by a repeatable evaluation harness that
+ships in the repository:</p>
+<ul>
+  <li><strong>Golden question sets</strong> — curated questions with known
+  correct source documents — are scored automatically: was the first result
+  correct (hit@1), was a correct one in the top five (hit@5), and how high
+  did it rank (MRR).</li>
+  <li><strong>Every published rate carries its sample size and a 95%
+  confidence interval.</strong> A 90% score over ten questions is presented
+  as exactly that — a small sample with a wide interval — because overclaiming
+  is the failure the product exists to prevent.</li>
+  <li><strong>Every run is logged.</strong> The evaluation history is a file
+  in the repo; the in-app metrics panel re-scores the <em>live</em> index
+  against the published baseline, so a change that quietly degrades retrieval
+  shows up as drift, with the failing questions named.</li>
+</ul>
+<table>
+  <tr><th>Milestone</th><th>Set</th><th>First answer correct</th><th>Ranking quality (MRR)</th></tr>
+  <tr><td>First baseline (day 1)</td><td>18 questions</td><td><b>67%</b> (12/18)</td><td><b>0.769</b></td></tr>
+  <tr><td>After ranking + corpus work (day 2)</td><td>19 questions</td><td><b>95%</b> (18/19)</td><td><b>0.947</b></td></tr>
+  <tr><td>Independent corpus (Apple, day 2)</td><td>10 questions</td><td><b>90%</b> (9/10)</td><td><b>0.900</b></td></tr>
+</table>
+<p>That 67% → 95% movement is the point of the harness: improvements were
+made <em>against a measurement</em>, run by run, not by feel. Where nothing
+has been measured, the metrics panel says "not measured" — it never fills in
+a number.</p>
+
+<h2>How it was built</h2>
+<p>This project is also a demonstration of a working method. I directed the
+build; AI coding sessions executed it. The division of labor was strict and
+it's the reason the pace didn't cost quality:</p>
+<ul>
+  <li><strong>I owned the decisions</strong> — the privacy model, what gets
+  verified and how, the scope of every phase, what ships publicly versus
+  stays private, cost ceilings, and the security gates. Each meaningful
+  decision is written down in an append-only decision log.</li>
+  <li><strong>AI sessions owned the keystrokes</strong> — implementation,
+  test-writing, and refactoring, working phase by phase against the scope I
+  set.</li>
+  <li><strong>Nothing merged on trust.</strong> Every phase landed with
+  automated tests (25 on day one, 343 today) and went through adversarial
+  review passes — dedicated sessions instructed to attack the work, whose
+  findings were fixed and then pinned as regression tests so they can't
+  come back.</li>
+</ul>
+<p>The timeline, verifiable from the commit history:</p>
+<table>
+  <tr><th>Day</th><th>Shipped</th></tr>
+  <tr><td><b>Day 1</b></td><td>Core engine: multi-format indexing, ranked search,
+  evaluation harness, first baseline. Then collections, a local web
+  workspace, and the question-answer loop with citation verification.</td></tr>
+  <tr><td><b>Day 2</b></td><td>Metrics panel with confidence intervals and drift
+  detection; mechanical grounding enforcement; legacy Excel support (driven
+  by a real batch of SEC filings that arrived that morning); voice input;
+  and this public demo — deployed, rate-limited, and answering on its
+  own.</td></tr>
+</table>
+
+<h2>Engineering choices worth noticing</h2>
+<ul>
+  <li><strong>Radically small dependency surface.</strong> The core engine
+  runs on Python's standard library and SQLite — no web framework, no vector
+  database, no orchestration stack. Deployment is "copy the folder." Format
+  readers are optional add-ons that degrade gracefully.</li>
+  <li><strong>A deliberate seam for the answering brain.</strong> Questions
+  go into a queue; <em>something</em> answers them through the same
+  verification gate. Locally that's a supervised session; on this demo it's
+  an inexpensive API model. Swapping brains changed no product code — the
+  seam was designed in from the start.</li>
+  <li><strong>Cost designed to a ceiling, not a hope.</strong> Free hosting;
+  an answering model that costs about a penny per question; a per-visitor
+  limit of five questions with a three-day reset; and a hard monthly spend
+  cap upstream. The worst possible outcome is "the demo pauses" — never a
+  surprise bill.</li>
+  <li><strong>Security posture by construction.</strong> On a private
+  machine, all writes are localhost-only. On the public internet, exactly
+  one write exists — asking a question — and it's rate-limited. Uploads,
+  feedback, and administration simply do not exist on the public surface.
+  The public launch was additionally gated behind a scheduled security
+  review.</li>
+</ul>
+
+<h2>Check everything on this page</h2>
+<p>This page follows the product's own rule: no claim without a source you
+can inspect.</p>
+<ul>
+  <li><strong>The accuracy numbers</strong> are in
+  <a href="https://github.com/evanderpool/uplink-demo/blob/main/fixtures/eval-history.jsonl">the
+  logged evaluation history</a>, reproducible with the repo's eval command.</li>
+  <li><strong>The 343 tests</strong> run with one command
+  (<code>python -m pytest</code>) in
+  <a href="https://github.com/evanderpool/uplink-demo">the demo repository</a>.</li>
+  <li><strong>The verification pipeline</strong> is readable code —
+  citation checking in <code>uplink/asks.py</code>, the demo's answering
+  worker in <code>uplink/api_brain.py</code>, the visitor limit in
+  <code>uplink/ratelimit.py</code>.</li>
+  <li><strong>The two-day timeline</strong> is the public commit history of
+  <a href="https://github.com/evanderpool/uplink">the engine repo</a>.</li>
+</ul>
+
+<p style="margin-top:28px">
+  <a class="cta" href="/">Try the live demo</a>
+  <a class="cta ghost" href="https://github.com/evanderpool/uplink">Read the source</a>
+</p>
+
+<div class="foot">
+  <p><strong>Erick Vanderpool</strong> — data analyst and AI engineer.
+  Uplink is a portfolio project of Artificial Management.<br>
+  <a href="https://github.com/evanderpool">github.com/evanderpool</a> ·
+  <a href="mailto:erick.vanderpool2@outlook.com">erick.vanderpool2@outlook.com</a></p>
+</div>
+
+</div>
+</body>
+</html>
