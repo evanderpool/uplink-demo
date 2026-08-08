@@ -45,11 +45,28 @@ def _parse_ts(value) -> datetime | None:
         return None
 
 
+_TAIL_BYTES = 512 * 1024  # read at most this much from the end of a log
+
+
 def _tail_jsonl(path: Path, limit: int = MAX_LOG_LINES) -> list[dict]:
     if not path.exists():
         return []
+    # Read only the tail of the file, not the whole thing: an append-only log
+    # on a public deploy can be inflated by unauthenticated GETs, and loading
+    # it whole on every /api/metrics call would turn that into a cost. Seek to
+    # the last _TAIL_BYTES and drop the first (possibly partial) line.
+    try:
+        size = path.stat().st_size
+        with path.open("rb") as f:
+            if size > _TAIL_BYTES:
+                f.seek(size - _TAIL_BYTES)
+                f.readline()  # discard the partial line the seek landed in
+            raw = f.read()
+    except OSError:
+        return []
+    text = raw.decode("utf-8", errors="replace")
     rows: list[dict] = []
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[-limit:]:
+    for line in text.splitlines()[-limit:]:
         line = line.strip()
         if not line:
             continue

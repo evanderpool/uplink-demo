@@ -255,3 +255,42 @@ def test_sixth_ask_from_one_visitor_is_limited(demo_server):
     # A different visitor still gets through.
     status, _ = _ask(url, "9.9.9.3")
     assert status == 200
+
+
+def test_spoofed_forwarded_for_cannot_mint_new_allowances(demo_server):
+    """The limit keys on the RIGHTMOST X-Forwarded-For hop — the one the proxy
+    adds — so rotating the client-controlled left entries must NOT reset it."""
+    url, _ = demo_server
+    real = "7.7.7.7"
+    for i in range(5):
+        # Each request spoofs a different left value; the real IP is rightmost.
+        status, _ = _post(
+            url + "/api/ask", json.dumps({"q": "when do restarts run"}).encode(),
+            "application/json",
+            extra={"X-Forwarded-For": f"1.2.3.{i}, {real}"})
+        assert status == 200, f"ask {i + 1}"
+    status, body = _post(
+        url + "/api/ask", json.dumps({"q": "when do restarts run"}).encode(),
+        "application/json",
+        extra={"X-Forwarded-For": f"9.9.9.9, {real}"})
+    assert status == 429, "spoofing the left XFF entry bypassed the limit"
+
+
+def test_public_metrics_do_not_echo_visitor_query_text(demo_server):
+    url, _ = demo_server
+    # A search that finds nothing gets logged; its text must not resurface.
+    _get(url + "/api/search?q=zzzq-secret-sauce-xyz")
+    _, body = _get(url + "/api/metrics")
+    m = json.loads(body)
+    assert "zzzq-secret-sauce-xyz" not in json.dumps(m)
+    gaps = m.get("gaps", {})
+    assert gaps.get("zero_hit") == []
+    assert gaps.get("unknown_terms") == []
+
+
+def test_rate_limiter_caps_tracked_keys(tmp_path: Path):
+    rl = RateLimiter(tmp_path / "rl.json", max_keys=10)
+    for i in range(25):
+        rl.check(f"10.0.0.{i}", now=1000.0 + i)
+    stored = json.loads((tmp_path / "rl.json").read_text("utf-8"))
+    assert len(stored) <= 10

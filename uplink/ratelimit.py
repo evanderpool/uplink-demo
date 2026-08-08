@@ -18,13 +18,17 @@ from pathlib import Path
 
 LIMIT = 5
 WINDOW_SECONDS = 3 * 24 * 3600  # questions come back 3 days later
+MAX_KEYS = 50_000  # hard ceiling on tracked visitors, so the state file and
+                   # per-request work stay bounded even under an IP flood
 
 
 class RateLimiter:
-    def __init__(self, path: Path, limit: int = LIMIT, window: int = WINDOW_SECONDS):
+    def __init__(self, path: Path, limit: int = LIMIT, window: int = WINDOW_SECONDS,
+                 max_keys: int = MAX_KEYS):
         self.path = Path(path)
         self.limit = limit
         self.window = window
+        self.max_keys = max_keys
         self._lock = threading.Lock()
 
     def _load(self) -> dict[str, list[float]]:
@@ -63,5 +67,14 @@ class RateLimiter:
                 )
             stamps.append(now)
             data[ip] = stamps
+            # Defense in depth: even though the IP key is now the proxy-added
+            # address (not client-spoofable), cap the number of tracked
+            # visitors so a distributed flood can't grow the file without
+            # bound. Evict the least-recently-active keys.
+            if len(data) > self.max_keys:
+                keep = sorted(data.items(), key=lambda kv: max(kv[1]),
+                              reverse=True)[:self.max_keys]
+                data = dict(keep)
+                data[ip] = stamps  # never evict the caller we just recorded
             self._save(data)
             return True, ""

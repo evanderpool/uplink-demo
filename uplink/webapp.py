@@ -424,14 +424,26 @@ def make_handler(
             """The visitor's address, for the demo's per-visitor ask limit.
 
             Behind the hosting platform's proxy the socket peer is the proxy,
-            not the visitor — the platform puts the real address first in
-            X-Forwarded-For. That header is only trusted in demo mode, where
-            a proxy is guaranteed to be in front of us.
+            not the visitor. X-Forwarded-For is a chain the client can PREPEND
+            to: the platform appends the real address on the RIGHT, so the
+            rightmost entry is the trustworthy one and the leftmost is
+            attacker-controlled. Reading the left would let anyone rotate a
+            fake header and mint unlimited fresh allowances against a paid
+            API — so take the rightmost hop and require it to parse as an IP,
+            falling back to the socket peer otherwise. Only trusted in demo
+            mode, where a proxy is guaranteed to be in front of us.
             """
             if demo_mode:
-                fwd = (self.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
-                if fwd:
-                    return fwd
+                parts = [p.strip() for p in
+                         (self.headers.get("X-Forwarded-For") or "").split(",")
+                         if p.strip()]
+                if parts:
+                    candidate = parts[-1]
+                    try:
+                        ipaddress.ip_address(candidate)
+                        return candidate
+                    except ValueError:
+                        pass
             return str(self.client_address[0])
 
         def _host_ok(self) -> bool:
@@ -774,6 +786,17 @@ def make_handler(
                 )
             finally:
                 conn.close()
+            if demo_mode:
+                # The gaps card echoes the VERBATIM text of failed searches.
+                # On a private machine that's a useful self-improvement queue;
+                # on a public demo it would show one anonymous visitor whatever
+                # another one typed into the search box. Keep the counts,
+                # drop the words. (Fixture question text elsewhere is the
+                # operator's own golden set, not visitor input, so it stays.)
+                g = payload.get("gaps")
+                if isinstance(g, dict):
+                    g["zero_hit"] = []
+                    g["unknown_terms"] = []
             self._json(200, payload)
 
         def _api_file(self, url) -> None:
