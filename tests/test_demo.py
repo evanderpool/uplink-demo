@@ -216,7 +216,23 @@ def test_brain_answers_are_formatted_for_reading():
     from uplink.api_brain import SYSTEM
     assert "bullet" in SYSTEM.lower()
     assert "•" in SYSTEM
-    assert "ONE short sentence" in SYSTEM
+    assert "One short sentence" in SYSTEM
+    assert "never a paragraph" in SYSTEM
+
+
+def test_reading_spreads_across_documents():
+    """A question spanning years must pull passages from several filings —
+    ranked search alone would hand the model one document."""
+    from types import SimpleNamespace as Hit
+    hits = [Hit(collection="apple", path=f"doc{i // 6}.xls", seq=i)
+            for i in range(24)]  # 6 consecutive hits per document
+    picked = api_brain._diversify(hits, per_doc=3, total=10)
+    assert len(picked) == 10
+    by_doc = {}
+    for h in picked:
+        by_doc[h.path] = by_doc.get(h.path, 0) + 1
+    assert max(by_doc.values()) <= 3
+    assert len(by_doc) >= 4  # spread over at least four documents
 
 
 def test_demo_status_reports_asks_without_writes(demo_server):
