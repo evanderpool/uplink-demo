@@ -6,12 +6,12 @@
 #
 # Set in the Render dashboard (never in this repo):
 #   ANTHROPIC_API_KEY  - powers the Ask AI brain (Claude Sonnet, ~2c/question)
-#   VOYAGE_API_KEY     - OPTIONAL. Add this to turn ON hybrid retrieval. With
+#   OPENAI_API_KEY     - OPTIONAL. Add this to turn ON hybrid retrieval. With
 #                        it set, the deploy embeds the corpus (sub-penny, one
 #                        time) and answers use BM25 + semantic vectors. Without
 #                        it, the build skips vectors and the demo runs pure
 #                        BM25 — so the site works either way. Set a small spend
-#                        cap on the Voyage account too.
+#                        cap on the OpenAI account too.
 
 services:
   - type: web
@@ -35,10 +35,10 @@ services:
       - key: UPLINK_HYBRID
         value: "1"
       - key: UPLINK_EMBEDDER
-        value: "voyage"
+        value: "openai"
       - key: PYTHON_VERSION
         value: "3.12.7"
       - key: ANTHROPIC_API_KEY
         sync: false
-      - key: VOYAGE_API_KEY
+      - key: OPENAI_API_KEY
         sync: false
