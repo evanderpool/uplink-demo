@@ -8,7 +8,7 @@ engine, different trust posture.
 
 | | Uplink (the product) | This demo |
 |---|---|---|
-| Where documents live | Your machine, never leave it | Public documents only (SEC filings, CDC guidance, BLS data, CISA advisories), fetched at deploy |
+| Where documents live | Your machine, never leave it | Public records only: ten Apple 10-K annual reports (SEC filings, FY2016–FY2025) in their original `.xls` format, shipped in `demo-docs/` |
 | Who answers questions | A supervised Claude Code session ("borrowed brain") | An API worker (`uplink/api_brain.py`) calling Claude Haiku |
 | Writes | Uploads/feedback/notes on localhost | All disabled except asking a question |
 | Ask limits | None | 5 questions per visitor, back after 3 days (`uplink/ratelimit.py`) |
@@ -23,19 +23,17 @@ cite a document it was never shown.
 
 1. Push this repo to GitHub.
 2. In Render: New → Blueprint → point it at the repo (`render.yaml` does the rest).
-3. Set two environment variables in the dashboard:
+3. Set one environment variable in the dashboard:
    - `ANTHROPIC_API_KEY` — powers Ask AI (set a monthly spend cap on the
      Anthropic workspace; the demo is designed to cost pennies).
-   - `UPLINK_CONTACT` — an email for SEC's polite-crawler policy.
-4. The build fetches the public corpora and indexes them; the app serves at
-   your `*.onrender.com` address. Free plan sleeps when idle — first visit
+4. The build indexes the shipped filings; the app serves at your
+   `*.onrender.com` address. Free plan sleeps when idle — first visit
    after a nap takes ~30–60s.
 
 ## Run locally
 
 ```
 pip install -r requirements-demo.txt
-python scripts/fetch_corpora.py --contact you@example.com
 python scripts/build_demo_index.py
 set UPLINK_DEMO=1            # PowerShell: $env:UPLINK_DEMO="1"
 set ANTHROPIC_API_KEY=...    # omit to run search-only

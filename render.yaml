@@ -1,12 +1,11 @@
 # Render deployment for the Uplink public demo.
 #
 # Free plan: the service sleeps when idle and wakes on the next visit
-# (~30-60s). The index is built during deploy from public sources, so the
-# repo ships no documents and no database.
+# (~30-60s). The documents ship with the repo (public SEC filings) and the
+# index is built during deploy — no downloads, fast identical builds.
 #
 # Set in the Render dashboard (never in this repo):
 #   ANTHROPIC_API_KEY  - powers the Ask AI brain (Claude Haiku)
-#   UPLINK_CONTACT     - contact email for polite corpus fetching (SEC asks)
 
 services:
   - type: web
@@ -15,7 +14,6 @@ services:
     plan: free
     buildCommand: >-
       pip install -r requirements-demo.txt &&
-      python scripts/fetch_corpora.py &&
       python scripts/build_demo_index.py
     startCommand: python -m uplink serve --db data/uplink.db --host 0.0.0.0 --port $PORT
     envVars:
@@ -24,6 +22,4 @@ services:
       - key: PYTHON_VERSION
         value: "3.12.7"
       - key: ANTHROPIC_API_KEY
-        sync: false
-      - key: UPLINK_CONTACT
         sync: false

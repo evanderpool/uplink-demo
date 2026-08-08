@@ -1,10 +1,9 @@
 """Build the demo's index at deploy time.
 
-The demo repo ships no documents and no database — corpora are public
-sources fetched by scripts/fetch_corpora.py during the build, then indexed
-here. Run from the repo root:
+The demo's documents live in demo-docs/<collection>/ and ship with the
+repo — all public records (SEC filings), so committing them is fine and
+every deploy is fast and identical. Run from the repo root:
 
-    python scripts/fetch_corpora.py
     python scripts/build_demo_index.py
 """
 
@@ -18,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from uplink.indexer import index_folder  # noqa: E402
 
 DB = Path("data") / "uplink.db"
-CORPORA = Path("corpora")
+CORPORA = Path("demo-docs")
 
 
 def discard_fake_pdfs() -> None:
@@ -44,8 +43,7 @@ def main() -> int:
     DB.parent.mkdir(parents=True, exist_ok=True)
     industries = [p for p in sorted(CORPORA.iterdir()) if p.is_dir()]
     if not industries:
-        print("error: no corpora found — run scripts/fetch_corpora.py first",
-              file=sys.stderr)
+        print("error: no documents found under demo-docs/", file=sys.stderr)
         return 2
     discard_fake_pdfs()
     total = 0
