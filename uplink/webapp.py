@@ -656,8 +656,20 @@ def make_handler(
                     "SELECT MAX(indexed_at) t FROM documents"
                 ).fetchone()["t"]
                 collections = db.list_collections(conn)
+                # Retrieval mode, so activation is confirmable at a glance:
+                # hybrid only when the flag is on AND vectors were actually
+                # built (an embedder name is stamped in meta).
+                try:
+                    vec = conn.execute(
+                        "SELECT COUNT(*) n FROM chunk_vectors").fetchone()["n"]
+                    emb = conn.execute(
+                        "SELECT value FROM meta WHERE key='embedder'").fetchone()
+                    embedder = emb["value"] if emb else None
+                except sqlite3.Error:
+                    vec, embedder = 0, None  # pre-vector index
             finally:
                 conn.close()
+            hybrid_on = os.environ.get("UPLINK_HYBRID") == "1" and vec > 0
             self._json(
                 200,
                 {
@@ -668,6 +680,9 @@ def make_handler(
                     "writes": writes_enabled,
                     "asks": writes_enabled or demo_mode,
                     "demo": demo_mode,
+                    "retrieval": "hybrid" if hybrid_on else "keyword (BM25)",
+                    "embedder": embedder if hybrid_on else None,
+                    "vectors": vec,
                     "build": build_id(),
                     "extensions": sorted(SUPPORTED_EXTENSIONS),
                     "max_upload_bytes": MAX_UPLOAD_BYTES,
