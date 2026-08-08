@@ -9,7 +9,7 @@ Built and directed by **Erick Vanderpool** ·
 [demo source](https://github.com/evanderpool/uplink-demo) ·
 [**live demo →**](https://uplink-demo.onrender.com)
 
-| 2 days | 343 | 95% | ~2¢ |
+| 2 days | 361 | 95% | ~2¢ |
 |---|---|---|---|
 | first commit → live public demo | automated tests, all passing | first-answer accuracy, measured (19-question set) | cost per answered question |
 
@@ -118,6 +118,43 @@ repository:
 That 67% → 95% movement is the point of the harness: improvements were made
 *against a measurement*, run by run, not by feel.
 
+### The harness in action: keyword vs. semantic search, measured
+
+The system started on **BM25** — mature keyword ranking, built into SQLite,
+zero dependencies, and strongest exactly where the documents are precise
+(names, numbers, section titles). The deliberate plan was to add **semantic
+vector search** only if the numbers justified it — not on faith, because
+vectors bring real costs (a model, more moving parts, and a failure mode
+where a *semantically similar but factually wrong* passage gets retrieved).
+
+So it was built behind a flag and measured head-to-head. Both retrievers
+scored the **same** golden questions over the demo's ten near-duplicate 10-K
+filings — a genuinely hard case for keyword search, because every filing
+repeats prior years as comparison columns, so the exact year is easy to lose:
+
+| Retriever | First answer correct | Ranking quality (MRR) |
+|---|---|---|
+| BM25 (keyword) | 53% (8/15) | 0.702 |
+| **Hybrid (BM25 + vectors, fused)** | **93% (14/15)** | **0.967** |
+
+*(15-question set, on-device `bge-small` embeddings, deterministic across
+runs. A small sample, reported as such.)*
+
+The mechanism is visible in a single question. Asked for "SG&A costs in
+fiscal 2022," BM25's top three filings were 2016, 2017, and 2025 — it matched
+the common words "selling, general, administrative" and lost the year.
+Hybrid returned 2022 first. The two are fused with **Reciprocal Rank
+Fusion**, which combines them by *rank* rather than raw score — so neither
+retriever's scale has to be calibrated against the other, and a strong result
+in either one floats to the top.
+
+Two honest notes kept with the number: this is one corpus and a 15-question
+sample, and near-duplicate filings are the case where keyword search is
+*most* disadvantaged — the gain would likely be smaller on a corpus of
+distinct documents. And the embedder choice follows the **trust boundary**,
+not performance: an on-device model where the documents are confidential
+(nothing leaves the machine), an embedding API only where the data is public.
+
 ## From local to live
 
 The demo didn't start public. It earned its way out, in deliberate stages —
@@ -218,10 +255,20 @@ reason two days of pace didn't cost quality:
   over thirty findings, including one critical; every one was fixed and then
   pinned as a regression test so it cannot quietly return.
 
+That review discipline kept paying out. When semantic search was added, an
+independent review agent caught a subtle correctness bug: a guard the code's
+own comments *promised* — refuse a query embedded by a different model than
+built the index — was never actually implemented, so a mismatched embedder
+would have silently fused meaningless results instead of falling back to
+keyword search. It was fixed and regression-tested the same session. That is
+the whole point of adversarial review: it finds the bug that looks like it
+works.
+
 | Day | Shipped |
 |---|---|
 | **Day 1** | Core engine: multi-format indexing, ranked search, evaluation harness, first baseline (67%). Then document collections, the local web workspace, the question queue with the supervised brain, and citation verification. |
 | **Day 2** | Metrics panel with confidence intervals and drift detection; grounding made mechanically enforced; legacy Excel support driven by a real batch of filings; voice input; source search and filtering; and this public demo — deployed, rate-limited, tuned against live questions, and answering on its own. |
+| **Day 3** | Two-agent security review (found and fixed a rate-limit bypass); model upgraded with a real root-cause fix for reasoning leaking into answers; and phase-2 hybrid retrieval — semantic vectors fused with keyword search, built behind a flag and proven with a measured before/after (53% → 93%). |
 
 ## Engineering choices worth noticing
 
@@ -246,9 +293,14 @@ reason two days of pace didn't cost quality:
 This document follows the product's own rule: no claim without a source you can
 inspect.
 
-- **The accuracy numbers** are in
-  [the logged evaluation history](fixtures/eval-history.jsonl), reproducible
-  with the repo's eval command.
+- **The accuracy numbers** — including the keyword-vs-hybrid comparison — are
+  in [the logged evaluation history](fixtures/eval-history.jsonl), and the
+  head-to-head is reproducible with
+  [`scripts/eval_compare.py`](scripts/eval_compare.py) against
+  [the golden questions](fixtures/demo-10k-golden.jsonl). (The live demo
+  currently serves pure BM25; hybrid is built, measured, and behind a flag —
+  activating it publicly is a deliberate next step, since on free hosting it
+  means the API-embedder path.)
 - **The tests** run with one command (`python -m pytest`) in
   [this repository](https://github.com/evanderpool/uplink-demo).
 - **The verification pipeline** is readable code — citation checking in
