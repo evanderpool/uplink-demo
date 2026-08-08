@@ -54,6 +54,15 @@ CREATE TABLE IF NOT EXISTS chunks (
 
 CREATE INDEX IF NOT EXISTS idx_chunks_doc ON chunks(doc_id);
 
+-- Phase-2 hybrid retrieval: one embedding vector per chunk, stored as packed
+-- float32. Additive and optional — a database with no vectors simply runs
+-- pure BM25, so this is safe to create everywhere. The embedder that produced
+-- them is recorded in meta ('embedder') so a mismatched model is detected.
+CREATE TABLE IF NOT EXISTS chunk_vectors (
+    chunk_id  INTEGER PRIMARY KEY REFERENCES chunks(id) ON DELETE CASCADE,
+    vec       BLOB NOT NULL
+);
+
 CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts USING fts5(
     text,
     section,

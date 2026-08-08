@@ -86,11 +86,18 @@ def run_eval(
     fixtures_path: str | Path,
     k: int = 5,
     collection: str | None = None,
+    retrieve_fn=None,
 ) -> EvalResult:
+    """Score the golden fixtures. `retrieve_fn(db_path, q, k, collection)`
+    defaults to BM25 search; pass the hybrid retriever to score it on the
+    exact same questions — that head-to-head is what gates phase 2."""
+    if retrieve_fn is None:
+        def retrieve_fn(db_path, q, k, collection):
+            return search(db_path, q, k=k, collection=collection)
     result = EvalResult(k=k)
     for fx in load_fixtures(fixtures_path):
         result.total += 1
-        hits = search(db_path, fx["q"], k=k, collection=collection)
+        hits = retrieve_fn(db_path, fx["q"], k, collection)
         rank = next(
             (i for i, h in enumerate(hits, start=1) if _matches(h, fx["expect"])), 0
         )

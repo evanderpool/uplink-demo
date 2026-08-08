@@ -23,7 +23,7 @@ import time
 from pathlib import Path
 
 from . import asks as asks_mod
-from .search import search
+from .hybrid import retrieve
 
 MODEL = os.environ.get("UPLINK_BRAIN_MODEL", "claude-sonnet-5")
 MAX_QUESTION_CHARS = 500
@@ -160,12 +160,15 @@ def answer_one(db_path: Path, asks_dir: Path, request: dict,
             return fail("no sources are selected — pick at least one document")
         include = _doc_pairs(docs)
 
+    # retrieve() is BM25 by default and hybrid (BM25+vectors, RRF) when
+    # UPLINK_HYBRID=1 and vectors exist — same call either way, so the flag
+    # is the only difference between the two retrieval modes.
     # max_text: the search API trims chunk text for display; the brain needs
     # the whole passage — a financial table cut off mid-sheet loses exactly
     # the line the question was about.
     hits = _diversify(
-        search(db_path, question, k=32, collection=collection, include=include,
-               max_text=4000),
+        retrieve(db_path, question, k=32, collection=collection, include=include,
+                 max_text=4000),
         per_doc=2, total=12)
     if not hits:
         asks_mod.write_answer(

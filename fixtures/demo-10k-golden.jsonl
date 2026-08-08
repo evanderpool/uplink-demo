@@ -1,0 +1,22 @@
+# Golden questions for the public demo corpus: ten Apple 10-K filings
+# (FY2016-FY2025). Each 'expect' names the filing whose HEADLINE year the
+# question is about. Note this corpus is near-duplicate by design — every
+# filing repeats two prior years as comparison columns — so it is a hard,
+# honest retrieval test and a deliberate probe of the "semantically similar
+# but wrong year" failure mode. Mix of exact-year questions (favour keyword
+# search) and paraphrased questions (favour semantic search).
+{"q": "Apple total net sales for fiscal year 2016", "expect": ["fy2016"]}
+{"q": "Apple net income for fiscal 2017", "expect": ["fy2017"]}
+{"q": "Apple research and development expenses in fiscal 2018", "expect": ["fy2018"]}
+{"q": "Apple services revenue fiscal 2019", "expect": ["fy2019"]}
+{"q": "Apple gross margin for fiscal year 2020", "expect": ["fy2020"]}
+{"q": "iPhone net sales in fiscal 2021", "expect": ["fy2021"]}
+{"q": "Apple total operating expenses fiscal 2022", "expect": ["fy2022"]}
+{"q": "Apple provision for income taxes fiscal 2023", "expect": ["fy2023"]}
+{"q": "Apple diluted earnings per share fiscal 2024", "expect": ["fy2024"]}
+{"q": "Apple total net sales fiscal 2025", "expect": ["fy2025"]}
+{"q": "how much did Apple spend developing new products in fiscal 2018", "expect": ["fy2018"]}
+{"q": "what did Apple earn from its services business in fiscal 2019", "expect": ["fy2019"]}
+{"q": "Apple profit after tax for fiscal 2023", "expect": ["fy2023"]}
+{"q": "money Apple made selling iPhones in fiscal 2021", "expect": ["fy2021"]}
+{"q": "Apple selling general and administrative costs fiscal 2022", "expect": ["fy2022"]}

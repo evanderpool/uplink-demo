@@ -3,3 +3,5 @@
 {"ts": "2026-08-07T13:33:11+00:00", "label": "v0.6 + spreadsheet/CSV corpora (BLS, CISA, CDC)", "db": "uplink.db", "fixtures": "industry-golden.jsonl", "questions": 19, "hit_at_1": 18, "hit_at_k": 18, "k": 5, "mrr": 0.947}
 {"ts": "2026-08-07T16:37:47+00:00", "label": "local: apple manual corpus (247 docs, 9533 passages)", "db": "uplink.db", "fixtures": "local-apple-golden.jsonl", "questions": 10, "hit_at_1": 9, "hit_at_k": 9, "k": 5, "mrr": 0.9}
 {"ts": "2026-08-07T22:33:33+00:00", "label": "post 10-K ingest (257 docs, xls extractor)", "db": "uplink.db", "fixtures": "local-apple-golden.jsonl", "questions": 10, "hit_at_1": 9, "hit_at_k": 9, "k": 5, "mrr": 0.9}
+{"ts": "2026-08-08T02:30:00+00:00", "label": "demo 10-K: BM25 baseline", "db": "uplink.db", "fixtures": "demo-10k-golden.jsonl", "questions": 15, "hit_at_1": 8, "hit_at_k": 14, "k": 5, "mrr": 0.702}
+{"ts": "2026-08-08T02:31:00+00:00", "label": "demo 10-K: hybrid BM25+bge-small RRF", "db": "uplink.db", "fixtures": "demo-10k-golden.jsonl", "questions": 15, "hit_at_1": 14, "hit_at_k": 15, "k": 5, "mrr": 0.967}
