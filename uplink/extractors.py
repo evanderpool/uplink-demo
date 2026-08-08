@@ -283,7 +283,11 @@ def _extract_xls(path: Path) -> Extracted:
 
     out = Extracted(title=path.stem)
     try:
-        wb = xlrd.open_workbook(str(path))
+        # xlrd prints benign structural notes ("OLE2 inconsistency", odd file
+        # size) to its logfile for real-world .xls exports — the file still
+        # reads fine. Send them to a throwaway buffer so they don't flood the
+        # console or a deploy log. Real problems still raise XLRDError below.
+        wb = xlrd.open_workbook(str(path), logfile=io.StringIO())
     except xlrd.XLRDError as exc:
         # Encrypted or corrupt workbook: warn and move on, like encrypted PDFs.
         out.warnings.append(f"unreadable .xls - skipped ({exc})")
