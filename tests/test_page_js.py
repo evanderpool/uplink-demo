@@ -183,8 +183,12 @@ def test_gsap_is_vendored_not_fetched():
     assert (static / "gsap.min.js").is_file()
     html = (static / "index.html").read_text(encoding="utf-8")
     assert "/static/gsap.min.js" in html
+    # The link-preview tags name the public address for crawlers; a browser never fetches them.
+    fetched = "\n".join(
+        line for line in html.splitlines() if not line.startswith('<meta property="og:')
+    )
     for remote in ("http://", "https://", "//cdn", "unpkg", "jsdelivr", "googleapis"):
-        assert remote not in html, remote
+        assert remote not in fetched, remote
 
 
 def test_ui_degrades_without_gsap():

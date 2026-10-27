@@ -97,6 +97,7 @@ STATIC_FILES = {
     "app.css": "text/css; charset=utf-8",
     "app.js": "text/javascript; charset=utf-8",
     "gsap.min.js": "text/javascript; charset=utf-8",
+    "og-image.jpg": "image/jpeg",  # the link-preview picture (og:image in index.html)
 }
 
 _BUILD_CACHE: dict = {"key": None, "id": "dev"}

@@ -106,6 +106,7 @@ def test_static_assets_serve_with_correct_types(server):
         ("app.css", "text/css"),
         ("app.js", "text/javascript"),
         ("gsap.min.js", "text/javascript"),
+        ("og-image.jpg", "image/jpeg"),
     ):
         with urllib.request.urlopen(server + "/static/" + name, timeout=10) as resp:
             assert resp.status == 200
